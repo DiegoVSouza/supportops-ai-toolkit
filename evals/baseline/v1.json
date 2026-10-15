@@ -1,0 +1,7 @@
+{
+  "decision_accuracy": 1.0,
+  "tool_call_accuracy": 1.0,
+  "groundedness": 1.0,
+  "escalation_accuracy": 1.0,
+  "source": "synthetic deterministic fake fixture baseline; not a model quality baseline"
+}
