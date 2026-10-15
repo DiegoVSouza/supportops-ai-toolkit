@@ -4,7 +4,7 @@
 - Full gate command: `python scripts/check_full.py`
 - Exit code: `0`; complete console transcript is in `check-full.log`.
 - Gate classes: metadata/lock validation, check-fast, 20 unit/contract tests, fixture-only offline eval, and 35-case adversarial suite.
-- Test summary: `Ran 20 tests ... OK`; `check-full: PASS; failures=[]`.
+- Test summary at this task commit: `Ran 20 tests ... OK`; `check-full: PASS; failures=[]`. The follow-up groundedness gate reruns 21 tests; see `groundedness-check.log`.
 - Cost report command: `python cost/report.py`; exit code `0`.
 - Cost report output: `{ "status": "PENDING", "reason": "No comparable recorded runs were supplied", "before": "PENDING", "after": "PENDING", "delta": "PENDING" }`.
 - Packaging check: `python -m pip wheel --no-deps --no-build-isolation --wheel-dir <temporary wheel directory> .`; exit code `0`; built `supportops_ai_toolkit-0.1.0-py3-none-any.whl`.

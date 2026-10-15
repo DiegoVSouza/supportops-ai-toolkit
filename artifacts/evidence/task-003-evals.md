@@ -8,11 +8,12 @@
 
 ```text
 test_deliberate_degradation_fails_gate (test_evals.EvalTests.test_deliberate_degradation_fails_gate) ... ok
+test_groundedness_compares_answer_terms_to_evidence (test_evals.EvalTests.test_groundedness_compares_answer_terms_to_evidence) ... ok
 test_invalid_dataset_rejected (test_evals.EvalTests.test_invalid_dataset_rejected) ... ok
 test_regression_tolerance_boundary (test_evals.EvalTests.test_regression_tolerance_boundary) ... ok
 test_versioned_dataset_fake_baseline (test_evals.EvalTests.test_versioned_dataset_fake_baseline) ... ok
 
-Ran 4 tests in 0.005s
+Ran 5 tests in 0.014s
 OK
 ```
 

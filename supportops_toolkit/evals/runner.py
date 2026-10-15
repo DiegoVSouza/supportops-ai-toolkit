@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any, Callable
@@ -56,7 +57,7 @@ def run_evals(runner: Callable[[dict[str, Any]], dict[str, Any]], dataset: Path)
         checks = {
             "decision": result.get("decision") == case["expected_decision"],
             "tool": result.get("tool") == case["expected_tool"],
-            "groundedness": bool(result.get("grounded")) if case.get("requires_evidence", True) else True,
+            "groundedness": is_grounded(result.get("answer", ""), case["evidence"]) if case.get("requires_evidence", True) else True,
             "escalation": bool(result.get("escalate")) == bool(case["expected_escalate"]),
         }
         decision += checks["decision"]
@@ -68,6 +69,18 @@ def run_evals(runner: Callable[[dict[str, Any]], dict[str, Any]], dataset: Path)
             failures.append(f"{case['id']}: {', '.join(failed)}")
     total = len(cases)
     return EvalReport(total, decision / total, tool_call / total, grounded / total, escalation / total, tuple(failures))
+
+
+_STOP_WORDS = frozenset({"a", "an", "and", "are", "as", "at", "be", "by", "for", "from", "in", "is", "it", "of", "on", "or", "the", "to", "with"})
+
+
+def is_grounded(answer: str, evidence: str, *, min_overlap: float = 0.6) -> bool:
+    """Check whether most answer terms are present in supplied evidence."""
+    if not 0 < min_overlap <= 1:
+        raise ValueError("min_overlap must be in (0, 1]")
+    answer_terms = set(re.findall(r"[a-z0-9]+", answer.lower())) - _STOP_WORDS
+    evidence_terms = set(re.findall(r"[a-z0-9]+", evidence.lower())) - _STOP_WORDS
+    return bool(answer_terms) and len(answer_terms & evidence_terms) / len(answer_terms) >= min_overlap
 
 
 def assert_regression(current: EvalReport, baseline: dict[str, float], max_drop: float = 0.05) -> None:
@@ -85,7 +98,7 @@ def fake_runner(case: dict[str, Any]) -> dict[str, Any]:
     return {
         "decision": case["fake_decision"],
         "tool": case["fake_tool"],
-        "grounded": case["fake_grounded"],
+        "answer": case["fake_answer"],
         "escalate": case["fake_escalate"],
     }
 

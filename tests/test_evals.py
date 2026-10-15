@@ -3,7 +3,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from supportops_toolkit.evals.runner import EvalReport, RegressionError, assert_regression, fake_runner, run_evals
+from supportops_toolkit.evals.runner import EvalReport, RegressionError, assert_regression, fake_runner, is_grounded, run_evals
 
 DATASET = Path("evals/datasets/v1/supportops.jsonl")
 
@@ -31,6 +31,13 @@ class EvalTests(unittest.TestCase):
         assert_regression(current, baseline, 0.05)
         with self.assertRaises(ValueError):
             assert_regression(current, baseline, 1.1)
+
+    def test_groundedness_compares_answer_terms_to_evidence(self):
+        self.assertTrue(is_grounded("carrier status after dispatch", "carrier status is available after dispatch"))
+        self.assertFalse(is_grounded("refund was already issued", "carrier status is available after dispatch"))
+        self.assertFalse(is_grounded("", "some evidence"))
+        with self.assertRaises(ValueError):
+            is_grounded("answer", "evidence", min_overlap=0)
 
     def test_invalid_dataset_rejected(self):
         with tempfile.TemporaryDirectory() as directory:

@@ -1,0 +1,60 @@
+[metadata] PASS required artifacts and locked dependencies
+
+[fast] C:\Users\dvsdi\AppData\Local\Programs\Python\Python313\python.exe scripts/check_fast.py
+check-fast: OK
+[fast] exit_code=0
+
+[unit] C:\Users\dvsdi\AppData\Local\Programs\Python\Python313\python.exe -m unittest discover -s tests -v
+test_exact_cache_order_capacity_and_hits (test_cost.CostUtilityTests.test_exact_cache_order_capacity_and_hits) ... ok
+test_router_escalates_on_complexity_risk_or_requirement (test_cost.CostUtilityTests.test_router_escalates_on_complexity_risk_or_requirement) ... ok
+test_semantic_lexical_similarity_and_namespace (test_cost.CostUtilityTests.test_semantic_lexical_similarity_and_namespace) ... ok
+test_streaming_and_cost_report_pending_or_real_delta (test_cost.CostUtilityTests.test_streaming_and_cost_report_pending_or_real_delta) ... ok
+test_token_budget_bounds_and_remaining (test_cost.CostUtilityTests.test_token_budget_bounds_and_remaining) ... ok
+test_deliberate_degradation_fails_gate (test_evals.EvalTests.test_deliberate_degradation_fails_gate) ... ok
+test_groundedness_compares_answer_terms_to_evidence (test_evals.EvalTests.test_groundedness_compares_answer_terms_to_evidence) ... ok
+test_invalid_dataset_rejected (test_evals.EvalTests.test_invalid_dataset_rejected) ... ok
+test_regression_tolerance_boundary (test_evals.EvalTests.test_regression_tolerance_boundary) ... ok
+test_versioned_dataset_fake_baseline (test_evals.EvalTests.test_versioned_dataset_fake_baseline) ... ok
+test_adversarial_suite_all_cases_block (test_guardrails.GuardrailTests.test_adversarial_suite_all_cases_block) ... ok
+test_injection_blocks_and_normal_text_passes (test_guardrails.GuardrailTests.test_injection_blocks_and_normal_text_passes) ... ok
+test_pii_redaction_email_phone_and_card (test_guardrails.GuardrailTests.test_pii_redaction_email_phone_and_card) ... ok
+test_roles_allow_only_configured_tools (test_guardrails.GuardrailTests.test_roles_allow_only_configured_tools) ... ok
+test_step_token_time_limits_and_exact_boundary (test_guardrails.GuardrailTests.test_step_token_time_limits_and_exact_boundary) ... ok
+test_suite_rejects_smaller_than_required (test_guardrails.GuardrailTests.test_suite_rejects_smaller_than_required) ... ok
+test_input_shape_and_refund_bounds (test_tools.ToolContractTests.test_input_shape_and_refund_bounds) ... ok
+test_registry_and_sample_tool_success (test_tools.ToolContractTests.test_registry_and_sample_tool_success) ... ok
+test_retry_transient_but_fail_fatal (test_tools.ToolContractTests.test_retry_transient_but_fail_fatal) ... ok
+test_timeout_and_invalid_configuration (test_tools.ToolContractTests.test_timeout_and_invalid_configuration) ... ok
+test_unknown_invoice_and_output_validation (test_tools.ToolContractTests.test_unknown_invoice_and_output_validation) ... ok
+
+----------------------------------------------------------------------
+Ran 21 tests in 0.037s
+
+OK
+[unit] exit_code=0
+
+[eval] C:\Users\dvsdi\AppData\Local\Programs\Python\Python313\python.exe -m supportops_toolkit.evals.runner
+{
+  "mode": "fake",
+  "total": 10,
+  "decision_accuracy": 1.0,
+  "tool_call_accuracy": 1.0,
+  "groundedness": 1.0,
+  "escalation_accuracy": 1.0,
+  "failures": [],
+  "regression": "PASS",
+  "quality_claim": "fixture-only; not a model measurement"
+}
+[eval] exit_code=0
+
+[adversarial] C:\Users\dvsdi\AppData\Local\Programs\Python\Python313\python.exe -m supportops_toolkit.adversarial
+{
+  "total": 35,
+  "blocked": 35,
+  "block_rate": 1.0,
+  "misses": []
+}
+[adversarial] exit_code=0
+
+check-full: PASS; failures=[]
+check_full_exit_code=0
