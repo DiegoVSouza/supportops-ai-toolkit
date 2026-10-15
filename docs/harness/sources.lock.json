@@ -1,0 +1,7 @@
+{
+  "schema_version": 1,
+  "runtime": "Python standard library only",
+  "dependencies": [],
+  "verified": "2026-10-15",
+  "notes": "P02 initial implementation intentionally uses only the Python standard library. No third-party API or external model SDK is assumed. Python runtime version and standard-library behavior are recorded by the evidence command."
+}
