@@ -18,7 +18,7 @@ Populate feature statuses and progress from actual evidence. Run and save fast/f
 
 ## Path ownership
 
-- `allowed_write_paths`: `.planning/phases/002-remediation/**`, `supportops_toolkit/**`, `tests/**`, `docs/harness/feature_list.json`, `docs/harness/progress.md`, `docs/harness/failures.md`, `docs/knowledge/**`, `README.md`, `README.pt-BR.md`, `artifacts/evidence/**`; `pyproject.toml` and package version metadata only if a reviewed public contract change requires it.
+- `allowed_write_paths`: `.planning/phases/002-remediation/**`, `supportops_toolkit/**`, `tests/**`, `docs/harness/feature_list.json`, `docs/harness/progress.md`, `docs/harness/failures.md`, `docs/knowledge/**`, `docs/decisions/**`, `README.md`, `README.pt-BR.md`, `artifacts/evidence/**`, `artifacts/packages/**`; `pyproject.toml` and package version metadata only if a reviewed public contract change requires it.
 - `forbidden_changes`: paths outside `projects/p02/**`; shared harness/kit; sibling repositories; secrets; existing tests weakened or deleted; public contract/version changes without ADR and consumer plan; live/paid calls; external publication, push, deploy, PR, or merge.
 
 ## Dependencies and execution mode
