@@ -1,6 +1,7 @@
 """Run the versioned adversarial guardrail suite and expose every missed case."""
 
 import json
+import argparse
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -40,3 +41,12 @@ def run_adversarial(dataset: Path) -> AdversarialReport:
         else:
             misses.append(row["id"])
     return AdversarialReport(len(rows), blocked, blocked / len(rows), tuple(misses))
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--dataset", type=Path, default=Path("guardrails/adversarial.jsonl"))
+    args = parser.parse_args()
+    report = run_adversarial(args.dataset)
+    print(json.dumps({"total": report.total, "blocked": report.blocked, "block_rate": report.block_rate, "misses": report.misses}, indent=2))
+    raise SystemExit(bool(report.misses))

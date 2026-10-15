@@ -1,7 +1,8 @@
 {
   "schema_version": 1,
-  "runtime": "Python standard library only",
-  "dependencies": [],
+  "runtime": {"name": "Python", "version": "3.13.12", "scope": "runtime standard library only"},
+  "runtime_dependencies": [],
+  "build_dependencies": [{"name": "setuptools", "version": "78.1.0", "scope": "package build backend", "official_docs": "https://packaging.python.org/en/latest/specifications/pyproject-toml/"}],
   "verified": "2026-10-15",
-  "notes": "P02 initial implementation intentionally uses only the Python standard library. No third-party API or external model SDK is assumed. Python runtime version and standard-library behavior are recorded by the evidence command."
+  "notes": "P02 runtime intentionally uses only the Python standard library. setuptools is build-only and pinned exactly; no external model SDK or live service API is used. Executor timeout and shutdown semantics were checked against Python 3.13 official documentation: https://docs.python.org/3.13/library/concurrent.futures.html."
 }

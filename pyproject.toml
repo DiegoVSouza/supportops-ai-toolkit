@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools==78.1.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "supportops-ai-toolkit"
+version = "0.1.0"
+description = "Deterministic tools, evaluations, guardrails, and cost utilities for SupportOps workflows"
+requires-python = ">=3.13"
+dependencies = []
+
+[tool.setuptools.packages.find]
+include = ["supportops_toolkit*"]
