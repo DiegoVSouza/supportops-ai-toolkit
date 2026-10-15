@@ -13,7 +13,7 @@ Implement injection checks, role allowlist, execution limits, PII redaction, and
 Implement exact/semantic cache interface, routing, token budget, streaming and report; replace check_full placeholder; write bilingual docs; run/save full validation.
 
 ## Ownership and constraints
-- `allowed_write_paths`: `.planning/**`, `harness.yaml`, `docs/harness/**`, `docs/knowledge/**`, `supportops_toolkit/**`, `tools/**`, `evals/**`, `guardrails/**`, `cost/**`, `tests/**`, `scripts/**`, `README.md`, `README.pt-BR.md`, `.github/workflows/**`, `pyproject.toml`, `artifacts/**`.
+- `allowed_write_paths`: `.planning/**`, `.gitignore`, `harness.yaml`, `docs/harness/**`, `docs/knowledge/**`, `supportops_toolkit/**`, `tools/**`, `evals/**`, `guardrails/**`, `cost/**`, `tests/**`, `scripts/**`, `README.md`, `README.pt-BR.md`, `.github/workflows/**`, `pyproject.toml`, `requirements-build.lock`, `artifacts/**`.
 - `forbidden_changes`: files outside this project, harness kit, sibling projects, global Git config, public contracts without ADR/version, secrets, paid/live calls, push/publication.
 - Dependency contract: no sibling imports; standard library only in initial version; fixtures are local doubles. No external runtime APIs are assumed.
 - `LLM_MODE=fake`; eval/test command: `python scripts/check_full.py`.
