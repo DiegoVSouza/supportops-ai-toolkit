@@ -1,0 +1,12 @@
+{
+  "distribution": "supportops-ai-toolkit",
+  "version": "0.2.0",
+  "filename": "supportops_ai_toolkit-0.2.0-py3-none-any.whl",
+  "source_commit": "b4966c54fa3feda3ff1eae36ee872e5c407a4102",
+  "sha256": "7126517f9c64202b034b8a067dedf29e1313bb3139f15a984e93660654eb4d10",
+  "build_command": "python -m pip wheel --no-deps --no-build-isolation -w artifacts/packages .",
+  "build_exit_code": 0,
+  "consumer_command": "python artifacts/evidence/verify_local_wheel.py artifacts/packages/supportops_ai_toolkit-0.2.0-py3-none-any.whl 0.2.0",
+  "consumer_exit_code": 0,
+  "external_publication": false
+}

@@ -1,0 +1,5 @@
+Command: python artifacts/evidence/verify_local_wheel.py artifacts/packages/supportops_ai_toolkit-0.2.0-py3-none-any.whl 0.2.0
+Exit code: 0
+Result: offline no-dependency install succeeded in a temporary isolated target.
+Imported distribution version: 0.2.0
+Imported module path: temporary target site-packages/supportops_toolkit/__init__.py

@@ -1,0 +1,6 @@
+Command: python -m pip wheel --no-deps --no-build-isolation -w artifacts/packages .
+Exit code: 0
+Build backend: setuptools 78.1.0 (locally installed; no network access)
+Output: Created supportops_ai_toolkit-0.2.0-py3-none-any.whl (13,496 bytes)
+SHA-256: 7126517f9c64202b034b8a067dedf29e1313bb3139f15a984e93660654eb4d10
+Source commit: b4966c54fa3feda3ff1eae36ee872e5c407a4102
