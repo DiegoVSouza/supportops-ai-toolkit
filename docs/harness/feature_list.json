@@ -1,3 +1,10 @@
 {
-  "features": []
+  "features": [
+    {"id": "safe-tool-retries", "status": "PASS_UNIT", "evidence": "artifacts/evidence/phase-002-regression-green.txt", "detail": "Ambiguous timeout and generic transport failures are not retried; explicit retryable ToolError is bounded."},
+    {"id": "tool-step-and-time-limits", "status": "PASS_UNIT", "evidence": "artifacts/evidence/phase-002-regression-green.txt", "detail": "Tool calls consume a step and are bounded by the remaining elapsed-time budget."},
+    {"id": "token-limit-in-agent-path", "status": "INCOMPLETE", "evidence": "P02 does not own an LLM/agent runtime; callers must report usage via ExecutionLimits.consume(tokens=...)."},
+    {"id": "schema-validation-subset", "status": "PASS_UNIT", "evidence": "artifacts/evidence/phase-002-regression-green.txt", "detail": "Documented subset rejects unknown keywords, bool-as-number, and non-finite inputs/outputs."},
+    {"id": "fake-evals-and-adversarial-suite", "status": "PASS_FAKE_FIXTURES", "evidence": "artifacts/evidence/phase-002-check-full.txt"},
+    {"id": "cost-latency-model-quality", "status": "PENDING", "evidence": "No comparable authorized model runs are recorded."}
+  ]
 }

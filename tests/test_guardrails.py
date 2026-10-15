@@ -42,6 +42,10 @@ class GuardrailTests(unittest.TestCase):
             ExecutionLimits(2, 10, 1, started_at=100).consume(now=102)
         with self.assertRaises(ValueError):
             ExecutionLimits(-1, 5, 1)
+        with self.assertRaises(ValueError):
+            ExecutionLimits(1, 1, float("inf"))
+        with self.assertRaises(ValueError):
+            ExecutionLimits(True, 1, 1)
 
     def test_adversarial_suite_all_cases_block(self):
         report = run_adversarial(Path("guardrails/adversarial.jsonl"))

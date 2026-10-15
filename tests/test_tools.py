@@ -1,6 +1,6 @@
 import time
 import unittest
-
+from supportops_toolkit.guardrails import ExecutionLimits, LimitExceeded
 from supportops_toolkit.sample_tools import issue_refund, lookup_invoice, search_kb
 from supportops_toolkit.tools import ToolError, classify_error, get_tool, tool
 
@@ -34,12 +34,12 @@ class ToolContractTests(unittest.TestCase):
         def transient():
             calls["count"] += 1
             if calls["count"] < 3:
-                raise ConnectionError("temporary")
+                raise ToolError("temporary", "retry is explicitly safe", retryable=True)
             return 7
         self.assertEqual(transient(), 7)
         self.assertEqual(calls["count"], 3)
         self.assertEqual(classify_error(ToolError("fatal", "bad")), "fatal")
-        self.assertEqual(classify_error(ConnectionError()), "retryable")
+        self.assertEqual(classify_error(ConnectionError()), "fatal")
         @tool(schema_in={"type": "object"}, schema_out={"type": "integer"}, retries=5, base_delay_s=0)
         def fatal():
             raise ValueError("permanent")
@@ -55,6 +55,56 @@ class ToolContractTests(unittest.TestCase):
             slow()
         with self.assertRaises(ValueError):
             tool(schema_in={}, schema_out={}, timeout_s=0)
+
+    def test_ambiguous_timeout_never_retries_side_effect(self):
+        calls = {"count": 0}
+
+        @tool(schema_in={"type": "object"}, schema_out={"type": "integer"}, timeout_s=0.01, retries=3, base_delay_s=0)
+        def side_effect():
+            calls["count"] += 1
+            time.sleep(0.04)
+            return 1
+
+        with self.assertRaisesRegex(ToolError, "exceeded"):
+            side_effect()
+        time.sleep(0.05)  # Let the uncancellable handler finish before inspecting its effect count.
+        self.assertEqual(calls["count"], 1)
+
+    def test_json_number_boundaries_reject_booleans_and_non_finite_values(self):
+        @tool(schema_in={"type": "object", "required": ["value"], "properties": {"value": {"type": "number"}}},
+              schema_out={"type": "number"})
+        def echo(value):
+            return value
+
+        self.assertEqual(echo(value=1.5), 1.5)
+        for value in (True, float("nan"), float("inf"), float("-inf")):
+            with self.subTest(value=value), self.assertRaises(ToolError):
+                echo(value=value)
+
+        @tool(schema_in={"type": "object"}, schema_out={"type": "number"})
+        def invalid_number_output():
+            return float("inf")
+        with self.assertRaises(ToolError):
+            invalid_number_output()
+
+        with self.assertRaisesRegex(ValueError, "unsupported schema keywords"):
+            tool(schema_in={"type": "string", "pattern": "^safe$"}, schema_out={"type": "string"})
+
+    def test_execution_limits_are_enforced_by_tool_call_path(self):
+        limits = ExecutionLimits(max_steps=1, max_tokens=10, max_seconds=1)
+
+        @tool(schema_in={"type": "object"}, schema_out={"type": "integer"})
+        def harmless():
+            return 1
+
+        self.assertEqual(harmless(execution_limits=limits), 1)
+        with self.assertRaisesRegex(LimitExceeded, "max_steps"):
+            harmless(execution_limits=limits)
+
+        expired = ExecutionLimits(max_steps=4, max_tokens=10, max_seconds=0.01)
+        expired.started_at -= 0.02
+        with self.assertRaisesRegex(LimitExceeded, "max_seconds"):
+            harmless(execution_limits=expired)
 
 
 if __name__ == "__main__":

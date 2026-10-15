@@ -1,0 +1,189 @@
+FF......                                                             [100%]
+================================== FAILURES ===================================
+_____ ToolContractTests.test_ambiguous_timeout_never_retries_side_effect ______
+
+self = <test_tools.ToolContractTests testMethod=test_ambiguous_timeout_never_retries_side_effect>
+
+    def test_ambiguous_timeout_never_retries_side_effect(self):
+        calls = {"count": 0}
+
+        @tool(schema_in={"type": "object"}, schema_out={"type": "integer"}, timeout_s=0.01, retries=3, base_delay_s=0)
+        def side_effect():
+            calls["count"] += 1
+            time.sleep(0.04)
+            return 1
+
+        with self.assertRaisesRegex(ToolError, "exceeded"):
+            side_effect()
+        time.sleep(0.05)  # Let the uncancellable handler finish before inspecting its effect count.
+>       self.assertEqual(calls["count"], 1)
+E       AssertionError: 4 != 1
+
+tests\test_tools.py:73: AssertionError
+___ ToolContractTests.test_execution_limits_are_enforced_by_tool_call_path ____
+
+self = ToolSpec(name='harmless', handler=<function ToolContractTests.test_execution_limits_are_enforced_by_tool_call_path.<lo...868FA14F40>, schema_in={'type': 'object'}, schema_out={'type': 'integer'}, timeout_s=5.0, retries=0, base_delay_s=0.01)
+kwargs = {'execution_limits': ExecutionLimits(max_steps=1, max_tokens=10, max_seconds=1, steps=0, tokens=0, started_at=23380.7130911)}
+attempts = 1
+executor = <concurrent.futures.thread.ThreadPoolExecutor object at 0x000002868F94D130>
+future = <Future at 0x2868f8c29e0 state=finished raised TypeError>
+error = TypeError("ToolContractTests.test_execution_limits_are_enforced_by_tool_call_path.<locals>.harmless() got an unexpected keyword argument 'execution_limits'")
+
+    def __call__(self, **kwargs: Any) -> Any:
+        _validate(kwargs, self.schema_in)
+        attempts = 0
+        while True:
+            attempts += 1
+            executor = ThreadPoolExecutor(max_workers=1)
+            future = executor.submit(self.handler, **kwargs)
+            try:
+>               result = future.result(timeout=self.timeout_s)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+supportops_toolkit\tools.py:95:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+C:\Users\dvsdi\AppData\Local\Programs\Python\Python313\Lib\concurrent\futures\_base.py:449: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+C:\Users\dvsdi\AppData\Local\Programs\Python\Python313\Lib\concurrent\futures\_base.py:401: in __get_result
+    raise self._exception
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = None
+
+    def run(self):
+        if not self.future.set_running_or_notify_cancel():
+            return
+
+        try:
+>           result = self.fn(*self.args, **self.kwargs)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           TypeError: ToolContractTests.test_execution_limits_are_enforced_by_tool_call_path.<locals>.harmless() got an unexpected keyword argument 'execution_limits'
+
+C:\Users\dvsdi\AppData\Local\Programs\Python\Python313\Lib\concurrent\futures\thread.py:59: TypeError
+
+The above exception was the direct cause of the following exception:
+
+self = <test_tools.ToolContractTests testMethod=test_execution_limits_are_enforced_by_tool_call_path>
+
+    def test_execution_limits_are_enforced_by_tool_call_path(self):
+        limits = ExecutionLimits(max_steps=1, max_tokens=10, max_seconds=1)
+
+        @tool(schema_in={"type": "object"}, schema_out={"type": "integer"})
+        def harmless():
+            return 1
+
+>       self.assertEqual(harmless(execution_limits=limits), 1)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_tools.py:93:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = ToolSpec(name='harmless', handler=<function ToolContractTests.test_execution_limits_are_enforced_by_tool_call_path.<lo...868FA14F40>, schema_in={'type': 'object'}, schema_out={'type': 'integer'}, timeout_s=5.0, retries=0, base_delay_s=0.01)
+kwargs = {'execution_limits': ExecutionLimits(max_steps=1, max_tokens=10, max_seconds=1, steps=0, tokens=0, started_at=23380.7130911)}
+attempts = 1
+executor = <concurrent.futures.thread.ThreadPoolExecutor object at 0x000002868F94D130>
+future = <Future at 0x2868f8c29e0 state=finished raised TypeError>
+error = TypeError("ToolContractTests.test_execution_limits_are_enforced_by_tool_call_path.<locals>.harmless() got an unexpected keyword argument 'execution_limits'")
+
+    def __call__(self, **kwargs: Any) -> Any:
+        _validate(kwargs, self.schema_in)
+        attempts = 0
+        while True:
+            attempts += 1
+            executor = ThreadPoolExecutor(max_workers=1)
+            future = executor.submit(self.handler, **kwargs)
+            try:
+                result = future.result(timeout=self.timeout_s)
+            except FutureTimeout as exc:
+                future.cancel()
+                error: BaseException = ToolError("timeout", f"{self.name} exceeded {self.timeout_s}s", retryable=True)
+                if attempts > self.retries:
+                    raise error from exc
+            except BaseException as exc:
+                error = exc
+                if classify_error(error) != "retryable" or attempts > self.retries:
+                    if isinstance(error, ToolError):
+                        raise
+>                   raise ToolError("tool_failed", str(error), retryable=False) from exc
+E                   supportops_toolkit.tools.ToolError: ToolContractTests.test_execution_limits_are_enforced_by_tool_call_path.<locals>.harmless() got an unexpected keyword argument 'execution_limits'
+
+supportops_toolkit\tools.py:106: ToolError
+_ ToolContractTests.test_json_number_boundaries_reject_booleans_and_non_finite_values (value=True) _
+
+self = <test_tools.ToolContractTests testMethod=test_json_number_boundaries_reject_booleans_and_non_finite_values>
+
+    def test_json_number_boundaries_reject_booleans_and_non_finite_values(self):
+        @tool(schema_in={"type": "object", "required": ["value"], "properties": {"value": {"type": "number"}}},
+              schema_out={"type": "number"})
+        def echo(value):
+            return value
+
+        self.assertEqual(echo(value=1.5), 1.5)
+        for value in (True, float("nan"), float("inf"), float("-inf")):
+>           with self.subTest(value=value), self.assertRaises(ToolError):
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AssertionError: ToolError not raised
+
+tests\test_tools.py:83: AssertionError
+_ ToolContractTests.test_json_number_boundaries_reject_booleans_and_non_finite_values (value=nan) _
+
+self = <test_tools.ToolContractTests testMethod=test_json_number_boundaries_reject_booleans_and_non_finite_values>
+
+    def test_json_number_boundaries_reject_booleans_and_non_finite_values(self):
+        @tool(schema_in={"type": "object", "required": ["value"], "properties": {"value": {"type": "number"}}},
+              schema_out={"type": "number"})
+        def echo(value):
+            return value
+
+        self.assertEqual(echo(value=1.5), 1.5)
+        for value in (True, float("nan"), float("inf"), float("-inf")):
+>           with self.subTest(value=value), self.assertRaises(ToolError):
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AssertionError: ToolError not raised
+
+tests\test_tools.py:83: AssertionError
+_ ToolContractTests.test_json_number_boundaries_reject_booleans_and_non_finite_values (value=inf) _
+
+self = <test_tools.ToolContractTests testMethod=test_json_number_boundaries_reject_booleans_and_non_finite_values>
+
+    def test_json_number_boundaries_reject_booleans_and_non_finite_values(self):
+        @tool(schema_in={"type": "object", "required": ["value"], "properties": {"value": {"type": "number"}}},
+              schema_out={"type": "number"})
+        def echo(value):
+            return value
+
+        self.assertEqual(echo(value=1.5), 1.5)
+        for value in (True, float("nan"), float("inf"), float("-inf")):
+>           with self.subTest(value=value), self.assertRaises(ToolError):
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AssertionError: ToolError not raised
+
+tests\test_tools.py:83: AssertionError
+_ ToolContractTests.test_json_number_boundaries_reject_booleans_and_non_finite_values (value=-inf) _
+
+self = <test_tools.ToolContractTests testMethod=test_json_number_boundaries_reject_booleans_and_non_finite_values>
+
+    def test_json_number_boundaries_reject_booleans_and_non_finite_values(self):
+        @tool(schema_in={"type": "object", "required": ["value"], "properties": {"value": {"type": "number"}}},
+              schema_out={"type": "number"})
+        def echo(value):
+            return value
+
+        self.assertEqual(echo(value=1.5), 1.5)
+        for value in (True, float("nan"), float("inf"), float("-inf")):
+>           with self.subTest(value=value), self.assertRaises(ToolError):
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AssertionError: ToolError not raised
+
+tests\test_tools.py:83: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_tools.py::ToolContractTests::test_ambiguous_timeout_never_retries_side_effect
+FAILED tests/test_tools.py::ToolContractTests::test_execution_limits_are_enforced_by_tool_call_path
+SUBFAILED(value=True) tests/test_tools.py::ToolContractTests::test_json_number_boundaries_reject_booleans_and_non_finite_values
+SUBFAILED(value=nan) tests/test_tools.py::ToolContractTests::test_json_number_boundaries_reject_booleans_and_non_finite_values
+SUBFAILED(value=inf) tests/test_tools.py::ToolContractTests::test_json_number_boundaries_reject_booleans_and_non_finite_values
+SUBFAILED(value=-inf) tests/test_tools.py::ToolContractTests::test_json_number_boundaries_reject_booleans_and_non_finite_values
+6 failed, 6 passed in 0.39s
+Command: python -m pytest tests/test_tools.py -q
+Exit code: 1

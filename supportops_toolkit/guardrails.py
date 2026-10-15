@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import re
 import time
+import math
 from dataclasses import dataclass, field
 
 
@@ -24,20 +25,29 @@ class ExecutionLimits:
     started_at: float = field(default_factory=time.monotonic)
 
     def __post_init__(self) -> None:
-        if self.max_steps < 0 or self.max_tokens < 0 or self.max_seconds <= 0:
+        if (isinstance(self.max_steps, bool) or not isinstance(self.max_steps, int) or self.max_steps < 0
+                or isinstance(self.max_tokens, bool) or not isinstance(self.max_tokens, int) or self.max_tokens < 0
+                or isinstance(self.max_seconds, bool) or not isinstance(self.max_seconds, (int, float))
+                or not math.isfinite(self.max_seconds) or self.max_seconds <= 0):
             raise ValueError("step/token limits must be non-negative and max_seconds positive")
+
+    def remaining_seconds(self, *, now: float | None = None) -> float:
+        elapsed = (time.monotonic() if now is None else now) - self.started_at
+        remaining = self.max_seconds - elapsed
+        if remaining <= 0:
+            raise LimitExceeded("Execution limit exceeded: max_seconds")
+        return remaining
 
     def consume(self, *, steps: int = 1, tokens: int = 0, now: float | None = None) -> None:
         if steps < 0 or tokens < 0:
             raise ValueError("consumption must be non-negative")
         proposed_steps, proposed_tokens = self.steps + steps, self.tokens + tokens
-        elapsed = (time.monotonic() if now is None else now) - self.started_at
         exceeded = []
         if proposed_steps > self.max_steps:
             exceeded.append("max_steps")
         if proposed_tokens > self.max_tokens:
             exceeded.append("max_tokens")
-        if elapsed > self.max_seconds:
+        if (time.monotonic() if now is None else now) - self.started_at > self.max_seconds:
             exceeded.append("max_seconds")
         if exceeded:
             raise LimitExceeded("Execution limit exceeded: " + ", ".join(exceeded))

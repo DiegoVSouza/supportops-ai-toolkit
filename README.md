@@ -23,7 +23,7 @@ python -c "from supportops_toolkit.sample_tools import lookup_invoice; print(loo
 
 ## Define a tool
 
-Use the `tool` decorator with JSON-schema-like input and output mappings. The current validator supports object/array/scalar types, required fields, additional-property rejection, enum, string bounds, and numeric bounds. Registration is deterministic and duplicate names fail.
+Use the `tool` decorator with the documented JSON-schema subset: `object`, `array`, `string`, `integer`, `number`, `boolean`, and `null`; `enum`; object `required`, `properties`, and `additionalProperties`; string `minLength`/`maxLength`; and numeric `minimum`/`maximum`. Unsupported keywords fail at registration. Boolean values are not numbers, and numeric inputs/outputs must be finite. This is not a complete JSON Schema implementation.
 
 ```python
 from supportops_toolkit.tools import tool
@@ -38,7 +38,7 @@ def search(query: str) -> dict:
     return {"matches": []}
 ```
 
-Retries apply to classified transient failures and use exponential delay with jitter. The in-process thread timeout stops waiting for a call, but Python cannot forcibly terminate a running thread; isolate untrusted or non-cooperative handlers in a process/service when a hard kill is required.
+Retries apply only to explicitly marked `ToolError(retryable=True)` failures. Generic timeouts and transport errors have an indeterminate outcome and are never retried automatically, because a handler may still be running or may have committed a side effect. The in-process thread timeout stops waiting but cannot terminate a running thread; use process/service isolation for hard cancellation. Pass `execution_limits=limits` to a tool call to consume one step and cap its wait by the remaining wall-clock budget. The LLM boundary must call `limits.consume(tokens=...)` with reported usage; this toolkit does not own an LLM execution path, so token enforcement across model calls remains incomplete.
 
 ## Run evals and read regression results
 
@@ -51,7 +51,7 @@ The runner reports decision accuracy, tool-call accuracy, rule-based groundednes
 
 ## Extend guardrails
 
-`supportops_toolkit.guardrails.guard` screens user and retrieved text, returns `allow`, `block`, or `redact`, and masks email, phone, and card-like strings. `authorize_tool(role, tool_name)` independently enforces role-specific tool allowlists. `ExecutionLimits` bounds steps, tokens, and elapsed time. The adversarial cases in `guardrails/adversarial.jsonl` cover direct and retrieved-content injection, exfiltration, role/tool abuse, and excessive refunds. The suite prints misses instead of hiding them.
+`supportops_toolkit.guardrails.guard` screens user and retrieved text, returns `allow`, `block`, or `redact`, and masks email, phone, and card-like strings. `authorize_tool(role, tool_name)` independently enforces role-specific tool allowlists. `ExecutionLimits` counts tool steps and enforces elapsed time in the tool call path; token usage is enforced when an LLM adapter reports it through `consume(tokens=...)`. The adversarial cases in `guardrails/adversarial.jsonl` cover direct and retrieved-content injection, exfiltration, role/tool abuse, and excessive refunds. The suite prints misses instead of hiding them.
 
 These lexical checks are defense-in-depth, not a guarantee against novel attacks. Refunds remain `approved_pending_human`; this project does not connect to a payment system.
 

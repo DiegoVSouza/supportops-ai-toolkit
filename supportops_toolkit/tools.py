@@ -2,13 +2,15 @@
 
 from __future__ import annotations
 
-import functools
+import math
 import random
 import threading
 import time
 from concurrent.futures import ThreadPoolExecutor, TimeoutError as FutureTimeout
 from dataclasses import dataclass
 from typing import Any, Callable, Mapping
+
+from supportops_toolkit.guardrails import ExecutionLimits, LimitExceeded
 
 
 class ToolError(Exception):
@@ -20,11 +22,54 @@ class ToolError(Exception):
         self.retryable = retryable
 
 
+_SCHEMA_KEYS = frozenset({"type", "enum", "required", "properties", "additionalProperties", "minLength", "maxLength", "minimum", "maximum"})
+_SCHEMA_TYPES = frozenset({"object", "array", "string", "integer", "number", "boolean", "null"})
+
+
+def _is_finite_number(value: Any) -> bool:
+    return not isinstance(value, bool) and (isinstance(value, int) or isinstance(value, float) and math.isfinite(value))
+
+
+def _validate_schema_definition(schema: Any, path: str = "$schema") -> None:
+    if schema is None or (callable(schema) and not isinstance(schema, Mapping)):
+        return
+    if not isinstance(schema, Mapping):
+        raise TypeError("schema must be a mapping, callable, or None")
+    unsupported = set(schema) - _SCHEMA_KEYS
+    if unsupported:
+        raise ValueError(f"unsupported schema keywords at {path}: {sorted(unsupported)}")
+    expected = schema.get("type")
+    if expected is not None and expected not in _SCHEMA_TYPES:
+        raise ValueError(f"unsupported schema type at {path}: {expected!r}")
+    if "enum" in schema and not isinstance(schema["enum"], (list, tuple)):
+        raise TypeError(f"enum at {path} must be a list or tuple")
+    required = schema.get("required", [])
+    if not isinstance(required, (list, tuple)) or any(not isinstance(item, str) for item in required):
+        raise TypeError(f"required at {path} must contain only strings")
+    properties = schema.get("properties", {})
+    if not isinstance(properties, Mapping):
+        raise TypeError(f"properties at {path} must be a mapping")
+    if "additionalProperties" in schema and not isinstance(schema["additionalProperties"], bool):
+        raise TypeError(f"additionalProperties at {path} must be a boolean")
+    for key in ("minLength", "maxLength"):
+        if key in schema and (not isinstance(schema[key], int) or isinstance(schema[key], bool) or schema[key] < 0):
+            raise ValueError(f"{key} at {path} must be a non-negative integer")
+    for key in ("minimum", "maximum"):
+        if key in schema and not _is_finite_number(schema[key]):
+            raise ValueError(f"{key} at {path} must be a finite number")
+    if schema.get("minLength", 0) > schema.get("maxLength", float("inf")):
+        raise ValueError(f"minLength exceeds maxLength at {path}")
+    if schema.get("minimum", float("-inf")) > schema.get("maximum", float("inf")):
+        raise ValueError(f"minimum exceeds maximum at {path}")
+    for key, child in properties.items():
+        _validate_schema_definition(child, f"{path}.properties.{key}")
+
+
 def classify_error(error: BaseException) -> str:
     if isinstance(error, ToolError):
         return "retryable" if error.retryable else "fatal"
-    if isinstance(error, (TimeoutError, FutureTimeout, ConnectionError)):
-        return "retryable"
+    # Generic transport/timeouts are outcome-ambiguous for writes. Retrying is
+    # opt-in through ToolError(retryable=True) after the adapter establishes safety.
     return "fatal"
 
 
@@ -52,6 +97,8 @@ def _validate(value: Any, schema: Any, path: str = "$") -> None:
         pytype = types.get(expected)
         if pytype is None or not isinstance(value, pytype) or (expected == "integer" and isinstance(value, bool)):
             raise ToolError("invalid_input" if path == "$" else "invalid_output", f"{path} must be {expected}")
+        if expected == "number" and not _is_finite_number(value):
+            raise ToolError("invalid_input" if path == "$" else "invalid_output", f"{path} must be a finite number")
     if "enum" in schema and value not in schema["enum"]:
         raise ToolError("invalid_input" if path == "$" else "invalid_output", f"{path} is not an allowed value")
     if isinstance(value, dict):
@@ -84,7 +131,11 @@ class ToolSpec:
     retries: int
     base_delay_s: float = 0.01
 
-    def __call__(self, **kwargs: Any) -> Any:
+    def __call__(self, *, execution_limits: ExecutionLimits | None = None, **kwargs: Any) -> Any:
+        timeout_s = self.timeout_s
+        if execution_limits is not None:
+            execution_limits.consume(steps=1)
+            timeout_s = min(timeout_s, execution_limits.remaining_seconds())
         _validate(kwargs, self.schema_in)
         attempts = 0
         while True:
@@ -92,12 +143,14 @@ class ToolSpec:
             executor = ThreadPoolExecutor(max_workers=1)
             future = executor.submit(self.handler, **kwargs)
             try:
-                result = future.result(timeout=self.timeout_s)
+                result = future.result(timeout=timeout_s)
             except FutureTimeout as exc:
                 future.cancel()
-                error: BaseException = ToolError("timeout", f"{self.name} exceeded {self.timeout_s}s", retryable=True)
-                if attempts > self.retries:
-                    raise error from exc
+                if execution_limits is not None and timeout_s < self.timeout_s:
+                    raise LimitExceeded("Execution limit exceeded: max_seconds") from exc
+                # The handler may still be running after this thread times out. Its
+                # side effect is indeterminate, so retrying can duplicate it.
+                raise ToolError("timeout", f"{self.name} exceeded {timeout_s}s; outcome is indeterminate", retryable=False) from exc
             except BaseException as exc:
                 error = exc
                 if classify_error(error) != "retryable" or attempts > self.retries:
@@ -120,6 +173,8 @@ _LOCK = threading.Lock()
 def tool(*, schema_in: Any, schema_out: Any, timeout_s: float = 5.0, retries: int = 0, base_delay_s: float = 0.01) -> Callable[[Callable[..., Any]], ToolSpec]:
     if timeout_s <= 0 or retries < 0 or base_delay_s < 0:
         raise ValueError("timeout_s must be positive and retries/base_delay_s non-negative")
+    _validate_schema_definition(schema_in, "$input")
+    _validate_schema_definition(schema_out, "$output")
 
     def register(handler: Callable[..., Any]) -> ToolSpec:
         spec = ToolSpec(handler.__name__, handler, schema_in, schema_out, timeout_s, retries, base_delay_s)

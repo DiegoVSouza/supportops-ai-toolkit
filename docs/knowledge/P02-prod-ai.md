@@ -6,6 +6,12 @@ Validar a entrada antes da execução reduz chamadas malformadas e impede que ca
 
 O registry P02 implementa um subconjunto local de JSON Schema para não introduzir dependências externas. Não deve ser apresentado como validador JSON Schema completo.
 
+## Limites de execucao e schemas
+
+O registry implementa somente `object`, `array`, `string`, `integer`, `number`, `boolean` e `null`; `enum`; `required`, `properties` e `additionalProperties`; `minLength`, `maxLength`, `minimum` e `maximum`. Keywords fora desse conjunto falham no registro. Booleanos nao sao numeros, e valores numericos precisam ser finitos. Isso nao e validacao completa de JSON Schema.
+
+Timeouts e erros genericos de transporte tem resultado ambiguo: o handler pode continuar ou ja ter aplicado um efeito. O retry automatico exige `ToolError(retryable=True)` explicito. `execution_limits=limits` conta uma etapa e limita a espera ao tempo restante. O uso de tokens deve ser reportado na fronteira LLM por `limits.consume(tokens=...)`; como P02 nao possui runtime de agente/LLM, a aplicacao de max_tokens numa execucao completa permanece INCOMPLETE.
+
 ## Desenho de evals
 
 Evals offline medem casos reproduzíveis com rótulos revisáveis. Separar acerto da decisão, seleção de tool, groundedness por evidência e escalonamento torna falhas acionáveis. Evals online podem representar tráfego real, mas exigem privacidade, amostragem, revisão humana e monitoramento de deriva.

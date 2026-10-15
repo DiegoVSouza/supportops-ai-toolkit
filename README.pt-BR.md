@@ -23,9 +23,9 @@ python -c "from supportops_toolkit.sample_tools import lookup_invoice; print(loo
 
 ## Como definir uma tool
 
-Use o decorator `tool` com schemas de entrada e saída compatíveis com o subconjunto documentado no README em inglês. O registry rejeita nomes duplicados, valida argumentos e resultados, classifica falhas e aplica retries limitados com backoff e jitter.
+Use o decorator `tool` com o subconjunto de JSON Schema documentado no README em inglês. Keywords não suportadas falham no registro; booleanos não são números e valores numéricos precisam ser finitos. O registry rejeita nomes duplicados e valida argumentos e resultados.
 
-O timeout em thread interrompe a espera do chamador, mas Python não encerra uma thread que continua executando. Use processo ou serviço isolado quando for necessário matar uma execução travada.
+Retries automáticos exigem `ToolError(retryable=True)` explícito. Timeout e erro genérico de transporte têm resultado ambíguo e não são repetidos, pois a thread pode continuar ou já ter aplicado um efeito. O timeout em thread interrompe a espera do chamador, mas Python não encerra uma thread que continua executando. Passe `execution_limits=limits` à tool para contar uma etapa e limitar a espera ao tempo restante; use processo ou serviço isolado para cancelamento forçado.
 
 ## Executar avaliações e entender regressões
 
@@ -38,7 +38,7 @@ O runner calcula acurácia de decisão e tool, groundedness por regra e acerto d
 
 ## Estender guardrails
 
-`guard` detecta instruções suspeitas, permite, bloqueia ou devolve texto com PII mascarada. `authorize_tool` valida a role contra a lista permitida. `ExecutionLimits` limita passos, tokens e tempo. A suíte com 35 exemplos cobre injeção direta e indireta via conteúdo recuperado, exfiltração, abuso de tools e reembolsos acima do limite. Os misses são listados.
+`guard` detecta instruções suspeitas, permite, bloqueia ou devolve texto com PII mascarada. `authorize_tool` valida a role contra a lista permitida. `ExecutionLimits` limita passos e tempo no caminho de execução; o runtime que possui a chamada LLM deve registrar o uso por `limits.consume(tokens=...)`. Como P02 não integra um runtime de agente/LLM, o limite total de tokens permanece INCOMPLETE. A suíte com 35 exemplos cobre injeção direta e indireta via conteúdo recuperado, exfiltração, abuso de tools e reembolsos acima do limite. Os misses são listados.
 
 Heurísticas são uma camada de defesa, não garantia contra ataques novos. O reembolso termina como `approved_pending_human`; não existe integração de pagamento.
 
