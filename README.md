@@ -1,6 +1,6 @@
 # SupportOps AI Toolkit
 
-Version `0.1.0` is a standard-library runtime toolkit for deterministic SupportOps workflows. It demonstrates contracts for tool schemas, resilient execution, code-first evaluation, safety controls, and local cost helpers. Sample data and fake eval results are fixtures, not production measurements.
+Version `0.2.0` is a standard-library runtime toolkit for deterministic SupportOps workflows. It demonstrates contracts for tool schemas, resilient execution, code-first evaluation, safety controls, and local cost helpers. Sample data and fake eval results are fixtures, not production measurements.
 
 ## Requirements and setup
 
