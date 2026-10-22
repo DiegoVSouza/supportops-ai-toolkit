@@ -2,7 +2,15 @@
 
 Version `0.2.0` is a standard-library runtime toolkit for deterministic SupportOps workflows. It demonstrates contracts for tool schemas, resilient execution, code-first evaluation, safety controls, and local cost helpers. Sample data and fake eval results are fixtures, not production measurements.
 
-## Requirements and setup
+## Problem
+
+Tool calls inside an agent workflow need explicit schemas, bounded execution, and a way to reject unsafe input before a model or adapter can act on it.
+
+## Architecture
+
+The toolkit separates the tool registry, guardrails, deterministic evaluators, and local cost helpers. It has no provider adapter or external connector.
+
+## Quickstart
 
 - Python `3.13+` (the verified environment is recorded in `docs/harness/sources.lock.json`).
 - Runtime has no third-party dependencies. Build tooling is pinned in `requirements-build.lock`.
@@ -21,7 +29,7 @@ Run a local tool example:
 python -c "from supportops_toolkit.sample_tools import lookup_invoice; print(lookup_invoice(invoice_id='inv-100'))"
 ```
 
-## Define a tool
+## How it works
 
 Use the `tool` decorator with the documented JSON-schema subset: `object`, `array`, `string`, `integer`, `number`, `boolean`, and `null`; `enum`; object `required`, `properties`, and `additionalProperties`; string `minLength`/`maxLength`; and numeric `minimum`/`maximum`. Unsupported keywords fail at registration. Boolean values are not numbers, and numeric inputs/outputs must be finite. This is not a complete JSON Schema implementation.
 
@@ -40,7 +48,7 @@ def search(query: str) -> dict:
 
 Retries apply only to explicitly marked `ToolError(retryable=True)` failures. Generic timeouts and transport errors have an indeterminate outcome and are never retried automatically, because a handler may still be running or may have committed a side effect. The in-process thread timeout stops waiting but cannot terminate a running thread; use process/service isolation for hard cancellation. Pass `execution_limits=limits` to a tool call to consume one step and cap its wait by the remaining wall-clock budget. The LLM boundary must call `limits.consume(tokens=...)` with reported usage; this toolkit does not own an LLM execution path, so token enforcement across model calls remains incomplete.
 
-## Run evals and read regression results
+## Results
 
 ```powershell
 $env:LLM_MODE = 'fake'
@@ -49,7 +57,7 @@ python -m supportops_toolkit.evals.runner --dataset evals/datasets/v1/supportops
 
 The runner reports decision accuracy, tool-call accuracy, rule-based groundedness, escalation accuracy, and failed case IDs. A drop greater than the configured `--max-drop` fails the gate. The current perfect scores come from canned synthetic labels and only prove fixture consistency. They do not measure model quality.
 
-## Extend guardrails
+## Security & reliability
 
 `supportops_toolkit.guardrails.guard` screens user and retrieved text, returns `allow`, `block`, or `redact`, and masks email, phone, and card-like strings. `authorize_tool(role, tool_name)` independently enforces role-specific tool allowlists. `ExecutionLimits` counts tool steps and enforces elapsed time in the tool call path; token usage is enforced when an LLM adapter reports it through `consume(tokens=...)`. The adversarial cases in `guardrails/adversarial.jsonl` cover direct and retrieved-content injection, exfiltration, role/tool abuse, and excessive refunds. The suite prints misses instead of hiding them.
 
@@ -61,7 +69,7 @@ These lexical checks are defense-in-depth, not a guarantee against novel attacks
 
 `python cost/report.py` prints `PENDING` because no comparable recorded runs exist. Supply two recorded run dictionaries to `build_report` to calculate deltas. No fake savings, latency, or token figures are presented as real results.
 
-## Validation classes and evidence
+## Testing
 
 - Unit/contract: `python -m unittest discover -s tests -v`.
 - Offline eval gate: `LLM_MODE=fake python -m supportops_toolkit.evals.runner`.
@@ -70,3 +78,11 @@ These lexical checks are defense-in-depth, not a guarantee against novel attacks
 - External integration, live model evaluation, and E2E: `INCOMPLETE` (no approved integrations or credentials).
 
 Evidence files under `artifacts/evidence/` record commands, exit codes, and output. See `.planning/phases/001-production-toolkit/` for the spec, plan, and verify checklist.
+
+## Design decisions
+
+Retries require an explicit safe-to-retry signal, schema support stays intentionally small, and fake results are labeled as fixtures rather than model measurements.
+
+## Limitations
+
+Lexical screening is defense in depth, not a general prompt-injection solution. Live models, external tools, and E2E integrations remain `INCOMPLETE`.
