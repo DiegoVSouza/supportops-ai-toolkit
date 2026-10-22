@@ -1,6 +1,6 @@
 # Toolkit de IA SupportOps
 
-A versão `0.1.0` oferece controles locais para fluxos determinísticos de SupportOps: contratos de tools, execução resiliente, avaliações por código, segurança e utilitários de custo. Os dados de exemplo e resultados fake são fixtures, não medições de produção.
+A versão `0.2.0` oferece controles locais para fluxos determinísticos de SupportOps: contratos de tools, execução resiliente, avaliações por código, segurança e utilitários de custo. Dados de exemplo e resultados fake são fixtures; não são medições de produção.
 
 ## Requisitos e configuração
 
@@ -25,7 +25,7 @@ python -c "from supportops_toolkit.sample_tools import lookup_invoice; print(loo
 
 Use o decorator `tool` com o subconjunto de JSON Schema documentado no README em inglês. Keywords não suportadas falham no registro; booleanos não são números e valores numéricos precisam ser finitos. O registry rejeita nomes duplicados e valida argumentos e resultados.
 
-Retries automáticos exigem `ToolError(retryable=True)` explícito. Timeout e erro genérico de transporte têm resultado ambíguo e não são repetidos, pois a thread pode continuar ou já ter aplicado um efeito. O timeout em thread interrompe a espera do chamador, mas Python não encerra uma thread que continua executando. Passe `execution_limits=limits` à tool para contar uma etapa e limitar a espera ao tempo restante; use processo ou serviço isolado para cancelamento forçado.
+Retries automáticos exigem `ToolError(retryable=True)`. Timeout e erro genérico de transporte deixam o resultado ambíguo e não são repetidos: a thread pode continuar ou já ter aplicado um efeito. O timeout interrompe a espera do chamador, mas não encerra uma thread em execução. Passe `execution_limits=limits` para contar uma etapa e limitar a espera; cancelamento forçado pede isolamento em processo ou serviço.
 
 ## Executar avaliações e entender regressões
 
@@ -40,7 +40,7 @@ O runner calcula acurácia de decisão e tool, groundedness por regra e acerto d
 
 `guard` detecta instruções suspeitas, permite, bloqueia ou devolve texto com PII mascarada. `authorize_tool` valida a role contra a lista permitida. `ExecutionLimits` limita passos e tempo no caminho de execução; o runtime que possui a chamada LLM deve registrar o uso por `limits.consume(tokens=...)`. Como P02 não integra um runtime de agente/LLM, o limite total de tokens permanece INCOMPLETE. A suíte com 35 exemplos cobre injeção direta e indireta via conteúdo recuperado, exfiltração, abuso de tools e reembolsos acima do limite. Os misses são listados.
 
-Heurísticas são uma camada de defesa, não garantia contra ataques novos. O reembolso termina como `approved_pending_human`; não existe integração de pagamento.
+As heurísticas ajudam a reduzir risco, mas não garantem cobertura de ataques novos. O reembolso termina como `approved_pending_human`; este projeto não integra pagamentos.
 
 ## Interpretar o relatório de custo
 
