@@ -18,3 +18,10 @@
 - Offline full gate passed with 29 tests. Evidence: `artifacts/evidence/phase-004-validation.txt`.
 - Live run attempted all ten cases: nine valid model assessments and one provider error. Decision/tool/escalation each scored 8/9 among valid outputs; groundedness is `NOT_EVALUATED` because the dataset does not supply independent retrieval context. Reported usage: 1,882 input and 726 output tokens; cost: USD 0. Evidence: `artifacts/evidence/live-free-model-eval.json`.
 - Evaluation status is `INCOMPLETE`; the provider error is preserved, and these ten synthetic records do not establish production quality.
+
+## 2026-10-23 — Phase 004 Groq live evaluation
+
+- Added optional `groq==1.7.0` live extra, one-case live runner, bounded transient retry/key rotation, and offline control tests. The default toolkit remains dependency-free.
+- Offline phase tests pass (9 tests); full P02 check passes (38 tests, fake eval 10/10, adversarial 35/35). Evidence: `artifacts/evidence/phase-004-groq-live-offline.txt` and `phase-004-groq-live-full.txt`.
+- Authenticated model listing confirmed `openai/gpt-oss-20b`. The one real case used 206 prompt tokens and 204 completion tokens (410 total), no retries or rotation. Decision and escalation passed; tool selection failed (`issue_refund` predicted, `lookup_invoice` expected). Metrics: decision 1/1, escalation 1/1, tool 0/1. Evidence: `artifacts/evidence/phase-004-groq-live-run.json` and `.txt`.
+- Phase result: `INCOMPLETE` at the capability gate because the selected real case failed its tool assertion. Cost is `PENDING`: the public developer-plan rate is nonzero and the provider SDK does not return account billing tier or charged amount. No additional live call was made.

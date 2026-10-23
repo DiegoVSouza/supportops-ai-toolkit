@@ -1,0 +1,40 @@
+{
+  "actual_model": "openai/gpt-oss-20b",
+  "case_id": "refund-eligible",
+  "checks": {
+    "decision": true,
+    "escalation": true,
+    "tool": false
+  },
+  "command": "LLM_MODE=live python scripts/run_live_groq_eval.py",
+  "cost_usd": "PENDING",
+  "exit_code": 1,
+  "expected": {
+    "decision": "answer",
+    "escalate": false,
+    "tool": "lookup_invoice"
+  },
+  "finished_at_utc": "2026-10-23T21:14:24.628280+00:00",
+  "model_available": true,
+  "metrics": {
+    "decision": 1,
+    "escalation": 1,
+    "tool": 0
+  },
+  "prediction": {
+    "decision": "answer",
+    "escalate": false,
+    "tool": "issue_refund"
+  },
+  "provider": "groq",
+  "requested_model": "openai/gpt-oss-20b",
+  "retry_count": 0,
+  "rotated_key_count": 0,
+  "started_at_utc": "2026-10-23T21:14:20.164191+00:00",
+  "status": "FAIL",
+  "usage": {
+    "completion_tokens": 204,
+    "prompt_tokens": 206,
+    "total_tokens": 410
+  }
+}

@@ -9,5 +9,10 @@ description = "Deterministic tools, evaluations, guardrails, and cost utilities 
 requires-python = ">=3.13"
 dependencies = []
 
+[project.optional-dependencies]
+live = [
+    "groq==1.7.0",
+]
+
 [tool.setuptools.packages.find]
 include = ["supportops_toolkit*"]

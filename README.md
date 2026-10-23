@@ -15,6 +15,7 @@ The toolkit separates the tool registry, guardrails, deterministic evaluators, a
 - Python `3.13+` (the verified environment is recorded in `docs/harness/sources.lock.json`).
 - Runtime has no third-party dependencies. Build tooling is pinned in `requirements-build.lock`.
 - Default mode is `LLM_MODE=fake`; there is no live model adapter and no external connector.
+- The optional `live` extra installs the official Groq SDK for a bounded evaluation script; it is not required by the default toolkit.
 
 Run the full deterministic gate from the repository root:
 
@@ -75,7 +76,8 @@ These lexical checks are defense-in-depth, not a guarantee against novel attacks
 - Offline eval gate: `LLM_MODE=fake python -m supportops_toolkit.evals.runner`.
 - Adversarial suite: `python -m supportops_toolkit.adversarial`.
 - Full deterministic CI gate: `python scripts/check_full.py`.
-- External integration, live model evaluation, and E2E: `INCOMPLETE` (no approved integrations or credentials).
+- Live Groq evaluation: set `$env:LLM_MODE = 'live'`, then run `uv run --extra live python scripts/run_live_groq_eval.py`. It checks model availability and evaluates one versioned SupportOps case, using the lab-root `.env` without printing credentials. It exits nonzero when a domain assertion fails. The free-plan allowance is required; cost remains `PENDING` until actual billing is confirmed. See `.planning/phases/004-groq-live/` for limits and evidence.
+- External integrations and E2E: `INCOMPLETE` (no connectors are part of this project).
 
 Evidence files under `artifacts/evidence/` record commands, exit codes, and output. See `.planning/phases/001-production-toolkit/` for the spec, plan, and verify checklist.
 
