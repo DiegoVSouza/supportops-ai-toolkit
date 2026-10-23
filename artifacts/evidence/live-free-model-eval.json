@@ -1,0 +1,226 @@
+{
+  "average_latency_ms": 1256,
+  "budget_cap_usd": "0.05",
+  "cases": [
+    {
+      "checks": {
+        "decision": true,
+        "escalation": true,
+        "tool": true
+      },
+      "expected": {
+        "decision": "answer",
+        "escalate": false,
+        "tool": "lookup_invoice"
+      },
+      "id": "refund-eligible",
+      "latency_ms": 661,
+      "prediction": {
+        "answer": "The customer has paid an invoice that was under policy and is now asking for assistance within 30 days of the payment.",
+        "decision": "answer",
+        "escalate": false,
+        "tool": "lookup_invoice"
+      },
+      "status": "PASS"
+    },
+    {
+      "checks": {
+        "decision": false,
+        "escalation": false,
+        "tool": false
+      },
+      "expected": {
+        "decision": "escalate",
+        "escalate": true,
+        "tool": "issue_refund"
+      },
+      "id": "refund-over-limit",
+      "latency_ms": 895,
+      "prediction": {
+        "answer": "I need to look up the invoice details to see the current balance and refund status.",
+        "decision": "answer",
+        "escalate": false,
+        "tool": "lookup_invoice"
+      },
+      "status": "PASS"
+    },
+    {
+      "error": "model response for invoice-missing was malformed: ValueError: model response has an invalid decision; content_type=NoneType, finish_reason=error, message_fields=['content', 'refusa",
+      "id": "invoice-missing",
+      "status": "ERROR"
+    },
+    {
+      "checks": {
+        "decision": true,
+        "escalation": true,
+        "tool": true
+      },
+      "expected": {
+        "decision": "answer",
+        "escalate": false,
+        "tool": "search_kb"
+      },
+      "id": "delivery-status",
+      "latency_ms": 2391,
+      "prediction": {
+        "answer": "I can help you track your dispatched parcel. Please provide your order number or tracking number so I can check the delivery status for you.",
+        "decision": "answer",
+        "escalate": false,
+        "tool": "search_kb"
+      },
+      "status": "PASS"
+    },
+    {
+      "checks": {
+        "decision": true,
+        "escalation": true,
+        "tool": true
+      },
+      "expected": {
+        "decision": "escalate",
+        "escalate": true,
+        "tool": "search_kb"
+      },
+      "id": "policy-exception",
+      "latency_ms": 1082,
+      "prediction": {
+        "answer": "The customer is asking for an exception to a refund deadline, which appears to be a policy exception request. This type of request typically requires escalation as it involves waiving standard policies and may need special consideration or approval from a supervisor.",
+        "decision": "escalate",
+        "escalate": true,
+        "tool": "search_kb"
+      },
+      "status": "PASS"
+    },
+    {
+      "checks": {
+        "decision": true,
+        "escalation": true,
+        "tool": true
+      },
+      "expected": {
+        "decision": "answer",
+        "escalate": false,
+        "tool": "lookup_invoice"
+      },
+      "id": "billing-lookup",
+      "latency_ms": 859,
+      "prediction": {
+        "answer": "I checked the status of invoice inv-100. It is currently pending payment. Please let us know if you need any further assistance.",
+        "decision": "answer",
+        "escalate": false,
+        "tool": "lookup_invoice"
+      },
+      "status": "PASS"
+    },
+    {
+      "checks": {
+        "decision": true,
+        "escalation": true,
+        "tool": true
+      },
+      "expected": {
+        "decision": "escalate",
+        "escalate": true,
+        "tool": "search_kb"
+      },
+      "id": "unsupported-promise",
+      "latency_ms": 1230,
+      "prediction": {
+        "answer": "The user is asking to guarantee an unlisted delivery date, which appears to be a request for a service or promise that may not be supported by the current knowledge base. This could involve making guarantees about delivery dates that aren't explicitly listed or supported in the available documentation. Since this involves potentially unsupported promises and may require clarification about what specific guarantee they're looking for, this should be escalated for proper evaluation.",
+        "decision": "escalate",
+        "escalate": true,
+        "tool": "search_kb"
+      },
+      "status": "PASS"
+    },
+    {
+      "checks": {
+        "decision": true,
+        "escalation": true,
+        "tool": true
+      },
+      "expected": {
+        "decision": "answer",
+        "escalate": false,
+        "tool": "issue_refund"
+      },
+      "id": "refund-at-limit",
+      "latency_ms": 1069,
+      "prediction": {
+        "answer": "I understand you want to request a refund within your invoice balance. To process this request, I'll need to look up your invoice details first. Could you please provide your invoice number or the email address associated with the invoice?",
+        "decision": "answer",
+        "escalate": false,
+        "tool": "issue_refund"
+      },
+      "status": "PASS"
+    },
+    {
+      "checks": {
+        "decision": true,
+        "escalation": true,
+        "tool": true
+      },
+      "expected": {
+        "decision": "escalate",
+        "escalate": true,
+        "tool": "search_kb"
+      },
+      "id": "no-evidence",
+      "latency_ms": 888,
+      "prediction": {
+        "answer": "The user is reporting that a question has no matching knowledge article. This indicates that the system couldn't find relevant information in the knowledge base for their query. This is a support issue that requires escalation as it falls outside the scope of standard troubleshooting and may need human intervention to investigate further or provide alternative assistance.",
+        "decision": "escalate",
+        "escalate": true,
+        "tool": "search_kb"
+      },
+      "status": "PASS"
+    },
+    {
+      "checks": {
+        "decision": true,
+        "escalation": true,
+        "tool": true
+      },
+      "expected": {
+        "decision": "answer",
+        "escalate": false,
+        "tool": "search_kb"
+      },
+      "id": "refund-policy",
+      "latency_ms": 2229,
+      "prediction": {
+        "answer": "The refund deadline is 30 days from the date of purchase. If the purchase was made more than 30 days ago, refunds are no longer available. For purchases within 30 days, you can request a refund through your account or by contacting customer support.",
+        "decision": "answer",
+        "escalate": false,
+        "tool": "search_kb"
+      },
+      "status": "PASS"
+    }
+  ],
+  "catalog_price": {
+    "completion": "0",
+    "prompt": "0"
+  },
+  "command": "python scripts/run_live_free_eval.py",
+  "completed_cases": 10,
+  "estimated_cost_usd": "0",
+  "exit_code": 1,
+  "failed_case_count": 1,
+  "finished_at_utc": "2026-10-23T19:35:41.607977+00:00",
+  "groundedness": "NOT_EVALUATED: the synthetic dataset has no independent retrieval context",
+  "metrics": {
+    "decision": 0.8888888888888888,
+    "escalation": 0.8888888888888888,
+    "tool": 0.8888888888888888
+  },
+  "model": "cohere/north-mini-code:free",
+  "provider": "openrouter",
+  "started_at_utc": "2026-10-23T19:35:29.190041+00:00",
+  "status": "INCOMPLETE",
+  "total_latency_ms": 11304,
+  "usage": {
+    "completion_tokens": 726,
+    "prompt_tokens": 1882
+  },
+  "valid_case_count": 9
+}
