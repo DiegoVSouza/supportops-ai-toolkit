@@ -25,3 +25,10 @@
 - Offline phase tests pass (9 tests); full P02 check passes (38 tests, fake eval 10/10, adversarial 35/35). Evidence: `artifacts/evidence/phase-004-groq-live-offline.txt` and `phase-004-groq-live-full.txt`.
 - Authenticated model listing confirmed `openai/gpt-oss-20b`. The one real case used 206 prompt tokens and 204 completion tokens (410 total), no retries or rotation. Decision and escalation passed; tool selection failed (`issue_refund` predicted, `lookup_invoice` expected). Metrics: decision 1/1, escalation 1/1, tool 0/1. Evidence: `artifacts/evidence/phase-004-groq-live-run.json` and `.txt`.
 - Phase result: `INCOMPLETE` at the capability gate because the selected real case failed its tool assertion. Cost is `PENDING`: the public developer-plan rate is nonzero and the provider SDK does not return account billing tier or charged amount. No additional live call was made.
+
+## 2026-10-26 — Phase 005 Groq evaluation remediation
+
+- Root cause: phase-004's valid response chose `issue_refund` because the prompt did not distinguish read-only invoice verification from the refund action, and the ticket omitted a verified invoice identifier/balance. The fixture label remains unchanged.
+- The first remediation request returned HTTP 400 after adding a property-level tool-schema description; it was not retried. The field was removed while the semantic guidance remained in the system prompt. The failed request is preserved at `phase-005-groq-remediation-attempt-1.json`.
+- Corrected live run passed decision, tool selection, and escalation for `refund-eligible`: 319 prompt tokens, 426 completion tokens, 745 total; no retries or key rotation. Cost remains `PENDING` because billed account usage is not exposed by the SDK. Evidence is in `phase-005-groq-remediation.json` and `phase-005-groq-remediation-live.txt`.
+- Focused remediation suite: 11 tests passed. Full gate: 40 tests, fake eval 10/10, adversarial 35/35; all pass. Evidence: `phase-005-groq-offline.txt` and `phase-005-groq-full.txt`. Phase status: `PASS` for the one-case remediation; one sample is not a broad quality claim.

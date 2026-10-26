@@ -23,7 +23,7 @@ MAX_COMPLETION_TOKENS = 512
 TIMEOUT_SECONDS = 20
 MAX_RETRY_AFTER_SECONDS = 2.0
 MAX_BACKOFF_SECONDS = 2.0
-ARTIFACT = ROOT / "artifacts" / "evidence" / "phase-004-groq-live-run.json"
+ARTIFACT = ROOT / "artifacts" / "evidence" / "phase-005-groq-remediation.json"
 
 
 def load_root_env(environ: dict[str, str] | None = None) -> dict[str, str]:
@@ -169,16 +169,7 @@ def _load_case() -> dict[str, object]:
 def _predict(client: object, case: dict[str, object]) -> object:
     return client.chat.completions.create(
         model=MODEL,
-        messages=[
-            {
-                "role": "system",
-                "content": (
-                    "Classify this SupportOps ticket. Submit exactly one assessment using the required tool. "
-                    "Use only ticket facts. Escalate policy exceptions, missing evidence, or unsupported actions."
-                ),
-            },
-            {"role": "user", "content": str(case["text"])},
-        ],
+        messages=build_messages(case),
         tools=[
             {
                 "type": "function",
@@ -189,7 +180,10 @@ def _predict(client: object, case: dict[str, object]) -> object:
                         "type": "object",
                         "properties": {
                             "decision": {"type": "string", "enum": ["answer", "escalate"]},
-                            "tool": {"type": "string", "enum": ["lookup_invoice", "issue_refund", "search_kb"]},
+                            "tool": {
+                                "type": "string",
+                                "enum": ["lookup_invoice", "issue_refund", "search_kb"],
+                            },
                             "escalate": {"type": "boolean"},
                         },
                         "required": ["decision", "tool", "escalate"],
@@ -202,6 +196,26 @@ def _predict(client: object, case: dict[str, object]) -> object:
         temperature=0,
         max_tokens=MAX_COMPLETION_TOKENS,
     )
+
+
+def build_messages(case: dict[str, object]) -> list[dict[str, str]]:
+    return [
+        {
+            "role": "system",
+            "content": (
+                "Classify this SupportOps ticket and submit exactly one assessment using the required tool. "
+                "Use only ticket facts. Escalate policy exceptions, missing evidence, or unsupported actions. "
+                "Tool semantics: lookup_invoice is a read-only lookup to verify invoice identity, paid status, "
+                "and balance; issue_refund is a downstream action and is appropriate only after the ticket "
+                "provides a verified invoice and an allowed refund amount; search_kb is a read-only policy lookup. "
+                "For this initial triage, when the ticket does not identify an invoice or verified balance, "
+                "choose lookup_invoice even if it claims the invoice is paid or within policy. Never imply that "
+                "choosing issue_refund itself authorizes or performs a refund. Return a concise answer grounded "
+                "only in the ticket."
+            ),
+        },
+        {"role": "user", "content": str(case["text"])},
+    ]
 
 
 def _write_result(result: dict[str, object]) -> None:
@@ -256,12 +270,18 @@ def main(environ: dict[str, str] | None = None) -> int:
             "escalate": case["expected_escalate"],
         }
         usage = response.usage
+        failed_checks = [name for name, passed in checks.items() if not passed]
+        failure_category = (
+            {"tool": "tool_selection_mismatch"}.get(failed_checks[0], f"{failed_checks[0]}_mismatch")
+            if failed_checks else None
+        )
         output.update(
             actual_model=getattr(response, "model", MODEL),
             prediction=prediction,
             expected=expected,
             checks=checks,
             metrics={name: int(value) for name, value in checks.items()},
+            failure_category=failure_category,
             usage={
                 "prompt_tokens": getattr(usage, "prompt_tokens", None),
                 "completion_tokens": getattr(usage, "completion_tokens", None),

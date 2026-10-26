@@ -7,6 +7,7 @@ from scripts.run_live_groq_eval import (
     MODEL,
     classify_error,
     configured_keys,
+    build_messages,
     load_root_env,
     parse_assessment,
     retry_delay,
@@ -116,6 +117,22 @@ class LiveGroqTests(unittest.TestCase):
             parse_assessment(
                 {"tool_calls": [{"function": {"name": "submit_assessment", "arguments": '{"decision":"maybe"}'}}]}
             )
+
+    def test_prompt_explains_read_only_lookup_vs_refund_action(self):
+        prompt = build_messages({"text": "Paid invoice under policy, customer asks within 30 days"})[0]["content"]
+        self.assertIn("lookup_invoice is a read-only lookup", prompt)
+        self.assertIn("issue_refund is a downstream action", prompt)
+        self.assertIn("does not identify an invoice or verified balance", prompt)
+
+    def test_completed_domain_mismatch_is_not_a_retryable_provider_error(self):
+        factory = Mock(return_value=object())
+        operation = Mock(return_value={"tool": "issue_refund"})
+        response, rotated = run_with_rotation(
+            ["secret-a", "secret-b"], factory, operation, sleep=Mock()
+        )
+        self.assertEqual(response, {"tool": "issue_refund"})
+        self.assertEqual(rotated, 0)
+        self.assertEqual(operation.call_count, 1)
 
 
 if __name__ == "__main__":
