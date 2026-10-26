@@ -15,3 +15,7 @@ Use opt-in Groq live mode with numbered credentials and authenticated model pref
 ## 2026-10-26 — Broad evaluation preparation
 
 Prepare an 80-case synthetic Core toolkit campaign with a fixed 24/56 development/holdout split and 48/32 English/Portuguese coverage. The project profile remains USD 0. Existing single-case free-tier runs do not authorize pilot, primary campaign, confirmation, or hidden judges. Preparation dry-runs only; every live cap, quota, reviewer approval, and cumulative ledger remains `PENDING` or not implemented.
+
+## 2026-10-26 — Bounded campaign ledger
+
+Phase 009 adds P02-local reservation accounting, process exclusion, and read-only resume inspection. It does not change the USD 0 profile or authorize free-tier campaign calls. Reviewer sign-off, quota evidence, finite cumulative limits, confirmation funding, pacing and model preflight remain `PENDING`; generation stays disabled. No provider request was made.

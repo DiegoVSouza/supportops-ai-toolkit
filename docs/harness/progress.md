@@ -41,3 +41,8 @@
 ## 2026-10-26 — Live Docker acceptance
 
 The first real completion returned HTTP 400 after successful model preflight and was not retried. The request now uses max_completion_tokens=512 and reasoning_effort=low; a regression verifies those parameters. One corrective real evaluation passed the unchanged decision/tool/escalation assertions (319 input / 91 output tokens). The exact original HTTP 400 cause was not established because the response body was deliberately not retained. Evidence: artifacts/evidence/live-docker/.
+## 2026-10-26 — Phase 009 bounded campaign ledger
+
+- Added append-only reservation accounting, atomic cumulative caps, a cross-process lease, and read-only resume inspection. Unknown usage retains the original reservation; reserved or completed trials cannot be repeated.
+- Focused ledger checks: 6 passed. Full fake project gate: 54 tests plus regression/adversarial checks passed. `-S` dry-run exited 0 and generation exited 2 while campaign requirements remain unresolved. No provider request or Docker mutation occurred.
+- Dispatcher, authorized finite caps, human review, crash-after-dispatch recovery, lease integration into live execution and independent review remain incomplete. Phase status: `INCOMPLETE`; evidence: `artifacts/evidence/live-campaign-ledger/`.
