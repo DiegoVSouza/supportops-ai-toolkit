@@ -38,7 +38,7 @@ class LiveGroqTests(unittest.TestCase):
                 "GROQ_API_KEY_4": "four",
             }
         )
-        self.assertEqual(keys, ["one", "two", "four"])
+        self.assertEqual(keys, ["two", "one", "four"])
 
     def test_mode_is_explicit_in_cli_contract(self):
         from scripts.run_live_groq_eval import require_live_mode

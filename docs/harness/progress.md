@@ -32,3 +32,8 @@
 - The first remediation request returned HTTP 400 after adding a property-level tool-schema description; it was not retried. The field was removed while the semantic guidance remained in the system prompt. The failed request is preserved at `phase-005-groq-remediation-attempt-1.json`.
 - Corrected live run passed decision, tool selection, and escalation for `refund-eligible`: 319 prompt tokens, 426 completion tokens, 745 total; no retries or key rotation. Cost remains `PENDING` because billed account usage is not exposed by the SDK. Evidence is in `phase-005-groq-remediation.json` and `phase-005-groq-remediation-live.txt`.
 - Focused remediation suite: 11 tests passed. Full gate: 40 tests, fake eval 10/10, adversarial 35/35; all pass. Evidence: `phase-005-groq-offline.txt` and `phase-005-groq-full.txt`. Phase status: `PASS` for the one-case remediation; one sample is not a broad quality claim.
+
+## 2026-10-26 — Phase 006 numbered-key allowlist
+
+- P02 now selects only `GROQ_API_KEY_1..4`; the compatibility `GROQ_API_KEY` is not an evaluation credential. The phase-005 success/failure evidence remains unchanged.
+- Full offline gate passed: 40 tests, fake regression 10/10, adversarial 35/35. The four-key live run passed `refund-eligible` with 319 prompt / 472 completion tokens, no retries or rotation, and cost `PENDING`.

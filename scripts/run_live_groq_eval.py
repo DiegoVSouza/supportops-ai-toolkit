@@ -23,7 +23,7 @@ MAX_COMPLETION_TOKENS = 512
 TIMEOUT_SECONDS = 20
 MAX_RETRY_AFTER_SECONDS = 2.0
 MAX_BACKOFF_SECONDS = 2.0
-ARTIFACT = ROOT / "artifacts" / "evidence" / "phase-005-groq-remediation.json"
+ARTIFACT = ROOT / "artifacts" / "evidence" / "phase-006-groq-four-key.json"
 
 
 def load_root_env(environ: dict[str, str] | None = None) -> dict[str, str]:
@@ -45,7 +45,7 @@ def load_root_env(environ: dict[str, str] | None = None) -> dict[str, str]:
 
 def configured_keys(environ: dict[str, str]) -> list[str]:
     keys: list[str] = []
-    for name in ("GROQ_API_KEY", "GROQ_API_KEY_1", "GROQ_API_KEY_2", "GROQ_API_KEY_3", "GROQ_API_KEY_4"):
+    for name in ("GROQ_API_KEY_1", "GROQ_API_KEY_2", "GROQ_API_KEY_3", "GROQ_API_KEY_4"):
         value = environ.get(name, "").strip()
         if value and value not in keys:
             keys.append(value)
@@ -220,12 +220,19 @@ def build_messages(case: dict[str, object]) -> list[dict[str, str]]:
 
 def _write_result(result: dict[str, object]) -> None:
     ARTIFACT.parent.mkdir(parents=True, exist_ok=True)
-    ARTIFACT.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    serialized = json.dumps(result, indent=2, sort_keys=True) + "\n"
+    ARTIFACT.write_text(serialized, encoding="utf-8")
+    ARTIFACT.with_suffix(".txt").write_text(
+        "Command: LLM_MODE=live uv run --extra live python scripts/run_live_groq_eval.py\n"
+        f"Exit code: {result.get('exit_code', 1)}\n"
+        f"Sanitized result: {json.dumps(result, sort_keys=True)}\n",
+        encoding="utf-8",
+    )
 
 
 def main(environ: dict[str, str] | None = None) -> int:
     output: dict[str, object] = {
-        "command": "LLM_MODE=live python scripts/run_live_groq_eval.py",
+        "command": "LLM_MODE=live uv run --extra live python scripts/run_live_groq_eval.py",
         "provider": "groq",
         "requested_model": MODEL,
         "case_id": CASE_ID,
