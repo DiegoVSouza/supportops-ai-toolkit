@@ -1,0 +1,16 @@
+COMMAND: uv run --locked python -m unittest discover -s tests -p test_live_campaign_preparation.py -v
+EXIT_CODE: 0
+STDOUT:
+
+STDERR:
+test_dataset_denominators (test_live_campaign_preparation.LiveCampaignPreparationTests.test_dataset_denominators) ... ok
+test_dry_run_has_correct_reservations_without_site_packages (test_live_campaign_preparation.LiveCampaignPreparationTests.test_dry_run_has_correct_reservations_without_site_packages) ... ok
+test_duplicate_input_or_cross_split_source_is_rejected (test_live_campaign_preparation.LiveCampaignPreparationTests.test_duplicate_input_or_cross_split_source_is_rejected) ... ok
+test_grader_rejects_wrong_decision_tool_schema_abstention_and_refund (test_live_campaign_preparation.LiveCampaignPreparationTests.test_grader_rejects_wrong_decision_tool_schema_abstention_and_refund) ... ok
+test_grader_rejects_wrong_tool_and_fixture_as_live (test_live_campaign_preparation.LiveCampaignPreparationTests.test_grader_rejects_wrong_tool_and_fixture_as_live) ... ok
+test_split_dry_runs_and_generation_block (test_live_campaign_preparation.LiveCampaignPreparationTests.test_split_dry_runs_and_generation_block) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.331s
+
+OK

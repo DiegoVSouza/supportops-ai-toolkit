@@ -14,7 +14,7 @@
   - `artifacts/evidence/live-campaign-preparation/**`
 - `forbidden_changes`: `supportops_toolkit/**` runtime/public contracts, other repositories, harness-kit, root `.env`, credentials, historical evidence, network/provider calls, Docker mutation, paid spend, external effects/refunds, publishing, push, or relaxed thresholds.
 - Budget source: project profile and intake decision are USD 0. Prior free-plan single-case runs are scoped exceptions only. Campaign, confirmation and any judge reservations are `PENDING`; the campaign must not execute until finite approved caps are documented. Numbered keys do not represent independent quotas.
-- Planned load to display, not authorization: pilot 6 development cases × 1 trial = at most 6 normal provider calls; full campaign 80 cases × 3 trials = at most 240 calls before additional confirmation. Since profile authorization is zero, every live reservation remains blocked.
+- Planned load to display, not authorization: pilot 6 development cases × 1 trial = at most 6 normal provider calls; full campaign 80 cases × 3 trials = at most 240 calls before a separate 20-case × 3-trial confirmation (60 calls). Pilot + primary + confirmation is 306 additive calls. Since profile authorization is zero, every live reservation remains blocked.
 - Validation: P02 fast/full fake checks; dataset/split/family/language and rubric calibration; fake-vs-live provenance checks; dry-run and blocked-generation tests. Save command, exit code, and sanitized output in the evidence path.
 - Stop condition: stop before dispatch if USD 0 policy is not explicitly reconciled, or quota, confirmation reserve, reviewers, model preflight, caps, or case/rubric review is missing. Result stays `INCOMPLETE`.
 

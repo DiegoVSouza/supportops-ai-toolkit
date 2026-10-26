@@ -1,0 +1,25 @@
+{
+  "dataset": "p02-live-v1",
+  "case_count": 80,
+  "development": 24,
+  "holdout": 56,
+  "languages": {
+    "en": 48,
+    "pt-BR": 32
+  },
+  "families": [
+    "refund_eligible",
+    "refund_exceeds_balance",
+    "invoice_missing",
+    "knowledge_question",
+    "ambiguous_request",
+    "prompt_injection",
+    "contradictory_evidence",
+    "schema_safety"
+  ],
+  "minimum_per_family": 10,
+  "sha256_cases_jsonl": "1d9643cef2bf475361079e33e0e7cf2de2095664531ab74da474ceeeb5f01985",
+  "authorship": "synthetic authored cases; independent review pending",
+  "sealed_holdout": "holdout rows are fixed in version control; access is not technically restricted",
+  "provider_calls": 0
+}

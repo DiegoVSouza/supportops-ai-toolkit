@@ -11,3 +11,7 @@
 ## 2026-10-26 — Live Docker acceptance
 
 Use opt-in Groq live mode with numbered credentials and authenticated model preflight. Preserve deterministic fake defaults and fail closed on provider/contract failures. Only local synthetic acceptance and the designated free allowance are authorized; billed cost remains PENDING. Evidence: artifacts/evidence/live-docker/.
+
+## 2026-10-26 — Broad evaluation preparation
+
+Prepare an 80-case synthetic Core toolkit campaign with a fixed 24/56 development/holdout split and 48/32 English/Portuguese coverage. The project profile remains USD 0. Existing single-case free-tier runs do not authorize pilot, primary campaign, confirmation, or hidden judges. Preparation dry-runs only; every live cap, quota, reviewer approval, and cumulative ledger remains `PENDING` or not implemented.
