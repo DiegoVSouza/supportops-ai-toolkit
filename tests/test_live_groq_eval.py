@@ -17,13 +17,25 @@ from scripts.run_live_groq_eval import (
 
 
 class LiveGroqTests(unittest.TestCase):
+    def test_gpt_oss_request_uses_low_reasoning_with_an_explicit_completion_cap(self):
+        from scripts.run_live_groq_eval import _predict, MAX_COMPLETION_TOKENS
+
+        client = Mock()
+        _predict(client, {"text": "Synthetic invoice policy question."})
+        arguments = client.chat.completions.create.call_args.kwargs
+        self.assertEqual(arguments["reasoning_effort"], "low")
+        self.assertEqual(arguments["max_completion_tokens"], MAX_COMPLETION_TOKENS)
+        self.assertNotIn("max_tokens", arguments)
+
     def test_root_env_loader_reads_without_logging_values(self):
         from pathlib import Path
         from tempfile import TemporaryDirectory
         from unittest.mock import patch
 
         with TemporaryDirectory() as directory:
-            Path(directory, ".env").write_text("GROQ_" + "API_KEY" + "=" + "test-value\n", encoding="utf-8")
+            Path(directory, ".env").write_text(
+                "GROQ_" + "API_KEY" + "=" + "test-value\n", encoding="utf-8"
+            )
             with patch("scripts.run_live_groq_eval.LAB_ROOT", Path(directory)):
                 values = load_root_env({"LLM_MODE": "live"})
         self.assertEqual(values["GROQ_API_KEY"], "test-value")
@@ -50,16 +62,30 @@ class LiveGroqTests(unittest.TestCase):
     def test_only_retryable_errors_rotate_and_exhaust_once(self):
         clients = [object(), object()]
         factory = Mock(side_effect=clients)
-        operation = Mock(side_effect=[TimeoutError("private detail"), TimeoutError("private detail")])
+        operation = Mock(
+            side_effect=[TimeoutError("private detail"), TimeoutError("private detail")]
+        )
         sleep = Mock()
-        with self.assertRaisesRegex(RuntimeError, "retryable failures exhausted") as raised:
-            run_with_rotation(["secret-a", "secret-b"], factory, operation, sleep=sleep, jitter=lambda: 0)
+        with self.assertRaisesRegex(
+            RuntimeError, "retryable failures exhausted"
+        ) as raised:
+            run_with_rotation(
+                ["secret-a", "secret-b"],
+                factory,
+                operation,
+                sleep=sleep,
+                jitter=lambda: 0,
+            )
         self.assertEqual(factory.call_count, 2)
         self.assertEqual(operation.call_count, 2)
         self.assertEqual(sleep.call_count, 1)
         self.assertNotIn("private detail", str(raised.exception))
-        self.assertEqual(classify_error(SimpleNamespace(status_code=401)), (False, "http_error", 401))
-        self.assertEqual(classify_error(SimpleNamespace(status_code=429)), (True, "http_error", 429))
+        self.assertEqual(
+            classify_error(SimpleNamespace(status_code=401)), (False, "http_error", 401)
+        )
+        self.assertEqual(
+            classify_error(SimpleNamespace(status_code=429)), (True, "http_error", 429)
+        )
 
     def test_rate_limit_rotates_once_after_retry_after(self):
         class RateLimited(Exception):
@@ -82,15 +108,19 @@ class LiveGroqTests(unittest.TestCase):
         factory = Mock(return_value=object())
         with self.assertRaisesRegex(RuntimeError, "non-retryable provider failure"):
             run_with_rotation(
-                ["secret-a", "secret-b"], factory,
-                Mock(side_effect=Unauthorized("must not escape")), sleep=Mock()
+                ["secret-a", "secret-b"],
+                factory,
+                Mock(side_effect=Unauthorized("must not escape")),
+                sleep=Mock(),
             )
         self.assertEqual(factory.call_count, 1)
 
     def test_retry_after_is_bounded_and_invalid_values_use_backoff(self):
         self.assertIsNone(retry_delay(0, {"retry-after": "30"}, jitter=lambda: 0))
         self.assertEqual(retry_delay(0, {"retry-after": "1.5"}, jitter=lambda: 0), 1.5)
-        self.assertEqual(retry_delay(1, {"retry-after": "not-a-number"}, jitter=lambda: 0), 1.0)
+        self.assertEqual(
+            retry_delay(1, {"retry-after": "not-a-number"}, jitter=lambda: 0), 1.0
+        )
 
     def test_model_catalog_requires_requested_model(self):
         verify_model_available(SimpleNamespace(data=[SimpleNamespace(id=MODEL)]))
@@ -105,21 +135,38 @@ class LiveGroqTests(unittest.TestCase):
                         "function": {
                             "name": "submit_assessment",
                             "arguments": json.dumps(
-                                {"decision": "answer", "tool": "lookup_invoice", "escalate": False}
+                                {
+                                    "decision": "answer",
+                                    "tool": "lookup_invoice",
+                                    "escalate": False,
+                                }
                             ),
                         }
                     }
                 ]
             }
         )
-        self.assertEqual(result, {"decision": "answer", "tool": "lookup_invoice", "escalate": False})
+        self.assertEqual(
+            result, {"decision": "answer", "tool": "lookup_invoice", "escalate": False}
+        )
         with self.assertRaisesRegex(ValueError, "invalid decision"):
             parse_assessment(
-                {"tool_calls": [{"function": {"name": "submit_assessment", "arguments": '{"decision":"maybe"}'}}]}
+                {
+                    "tool_calls": [
+                        {
+                            "function": {
+                                "name": "submit_assessment",
+                                "arguments": '{"decision":"maybe"}',
+                            }
+                        }
+                    ]
+                }
             )
 
     def test_prompt_explains_read_only_lookup_vs_refund_action(self):
-        prompt = build_messages({"text": "Paid invoice under policy, customer asks within 30 days"})[0]["content"]
+        prompt = build_messages(
+            {"text": "Paid invoice under policy, customer asks within 30 days"}
+        )[0]["content"]
         self.assertIn("lookup_invoice is a read-only lookup", prompt)
         self.assertIn("issue_refund is a downstream action", prompt)
         self.assertIn("does not identify an invoice or verified balance", prompt)

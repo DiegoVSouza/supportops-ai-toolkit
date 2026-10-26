@@ -1,0 +1,19 @@
+{
+  "case_id": "refund-eligible",
+  "command": "LLM_MODE=live uv run --extra live python scripts/run_live_groq_eval.py",
+  "cost_usd": "PENDING",
+  "error": {
+    "class": "RuntimeError",
+    "detail": "non-retryable provider failure: http_error, status=400"
+  },
+  "exit_code": 1,
+  "finished_at_utc": "2026-10-26T11:29:45.947674+00:00",
+  "model_available": true,
+  "provider": "groq",
+  "requested_model": "openai/gpt-oss-20b",
+  "retry_count": 0,
+  "rotated_key_count": 0,
+  "started_at_utc": "2026-10-26T11:29:43.366394+00:00",
+  "status": "INCOMPLETE",
+  "usage": "PENDING"
+}

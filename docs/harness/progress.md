@@ -37,3 +37,7 @@
 
 - P02 now selects only `GROQ_API_KEY_1..4`; the compatibility `GROQ_API_KEY` is not an evaluation credential. The phase-005 success/failure evidence remains unchanged.
 - Full offline gate passed: 40 tests, fake regression 10/10, adversarial 35/35. The four-key live run passed `refund-eligible` with 319 prompt / 472 completion tokens, no retries or rotation, and cost `PENDING`.
+
+## 2026-10-26 — Live Docker acceptance
+
+The first real completion returned HTTP 400 after successful model preflight and was not retried. The request now uses max_completion_tokens=512 and reasoning_effort=low; a regression verifies those parameters. One corrective real evaluation passed the unchanged decision/tool/escalation assertions (319 input / 91 output tokens). The exact original HTTP 400 cause was not established because the response body was deliberately not retained. Evidence: artifacts/evidence/live-docker/.

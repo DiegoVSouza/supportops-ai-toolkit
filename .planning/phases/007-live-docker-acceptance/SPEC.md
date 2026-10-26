@@ -1,6 +1,6 @@
 # Live Groq and Docker acceptance
 
-Status: planned.
+Status: verified for the bounded acceptance case.
 
 Run the versioned SupportOps evaluation against Groq without overwriting earlier attempts and rerun the offline regression gate.
 

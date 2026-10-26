@@ -23,7 +23,38 @@ MAX_COMPLETION_TOKENS = 512
 TIMEOUT_SECONDS = 20
 MAX_RETRY_AFTER_SECONDS = 2.0
 MAX_BACKOFF_SECONDS = 2.0
-ARTIFACT = ROOT / "artifacts" / "evidence" / "phase-006-groq-four-key.json"
+ARTIFACT = (
+    ROOT
+    / "artifacts"
+    / "evidence"
+    / (
+        "phase-007-groq-live-"
+        + datetime.now(UTC).strftime("%Y%m%dT%H%M%S%fZ")
+        + ".json"
+    )
+)
+
+
+class ProviderFailure(RuntimeError):
+    def __init__(self, error_class, status, code=None):
+        super().__init__(
+            f"non-retryable provider failure: {error_class}, status={status}"
+        )
+        self.status = status
+        self.code = (
+            code
+            if code
+            in {
+                "tool_use_failed",
+                "json_validate_failed",
+                "invalid_request_error",
+                "model_not_found",
+                "rate_limit_exceeded",
+                "context_length_exceeded",
+                "invalid_api_key",
+            }
+            else None
+        )
 
 
 def load_root_env(environ: dict[str, str] | None = None) -> dict[str, str]:
@@ -45,7 +76,12 @@ def load_root_env(environ: dict[str, str] | None = None) -> dict[str, str]:
 
 def configured_keys(environ: dict[str, str]) -> list[str]:
     keys: list[str] = []
-    for name in ("GROQ_API_KEY_1", "GROQ_API_KEY_2", "GROQ_API_KEY_3", "GROQ_API_KEY_4"):
+    for name in (
+        "GROQ_API_KEY_1",
+        "GROQ_API_KEY_2",
+        "GROQ_API_KEY_3",
+        "GROQ_API_KEY_4",
+    ):
         value = environ.get(name, "").strip()
         if value and value not in keys:
             keys.append(value)
@@ -58,8 +94,12 @@ def require_live_mode(environ: dict[str, str]) -> None:
 
 
 def verify_model_available(response: object) -> None:
-    if not any(getattr(item, "id", None) == MODEL for item in getattr(response, "data", [])):
-        raise RuntimeError("requested model is unavailable in the authenticated Groq catalog")
+    if not any(
+        getattr(item, "id", None) == MODEL for item in getattr(response, "data", [])
+    ):
+        raise RuntimeError(
+            "requested model is unavailable in the authenticated Groq catalog"
+        )
 
 
 def classify_error(exc: Exception) -> tuple[bool, str, int | None]:
@@ -71,7 +111,12 @@ def classify_error(exc: Exception) -> tuple[bool, str, int | None]:
         retryable = status == 429 or status in {408, 409, 500, 502, 503, 504}
         return retryable, "http_error", status
     name = type(exc).__name__
-    if name in {"APIConnectionError", "APITimeoutError", "TimeoutError", "ConnectionError"}:
+    if name in {
+        "APIConnectionError",
+        "APITimeoutError",
+        "TimeoutError",
+        "ConnectionError",
+    }:
         return True, "transport_error", None
     return False, "provider_error", None
 
@@ -113,25 +158,48 @@ def run_with_rotation(
         except Exception as exc:
             retryable, error_class, status = classify_error(exc)
             if not retryable:
-                raise RuntimeError(f"non-retryable provider failure: {error_class}, status={status}") from None
+                body = getattr(exc, "body", None)
+                detail = body.get("error", {}) if isinstance(body, dict) else {}
+                code = detail.get("code") if isinstance(detail, dict) else None
+                raise ProviderFailure(error_class, status, code) from None
             if index == len(keys) - 1:
                 break
             headers = getattr(exc, "headers", None)
             delay = retry_delay(index, headers, jitter=jitter)
             if delay is None:
-                raise RuntimeError("provider Retry-After exceeds the configured wait ceiling") from None
+                raise RuntimeError(
+                    "provider Retry-After exceeds the configured wait ceiling"
+                ) from None
             sleep(delay)
-    raise RuntimeError("retryable failures exhausted after one configured key pass") from None
+    raise RuntimeError(
+        "retryable failures exhausted after one configured key pass"
+    ) from None
 
 
 def parse_assessment(message: object) -> dict[str, object]:
-    calls = (message.get("tool_calls") if isinstance(message, dict) else getattr(message, "tool_calls", None)) or []
+    calls = (
+        message.get("tool_calls")
+        if isinstance(message, dict)
+        else getattr(message, "tool_calls", None)
+    ) or []
     if not calls:
         raise ValueError("missing assessment tool call")
     call = calls[0]
-    function = call.get("function") if isinstance(call, dict) else getattr(call, "function", None)
-    name = function.get("name") if isinstance(function, dict) else getattr(function, "name", None)
-    arguments = function.get("arguments") if isinstance(function, dict) else getattr(function, "arguments", None)
+    function = (
+        call.get("function")
+        if isinstance(call, dict)
+        else getattr(call, "function", None)
+    )
+    name = (
+        function.get("name")
+        if isinstance(function, dict)
+        else getattr(function, "name", None)
+    )
+    arguments = (
+        function.get("arguments")
+        if isinstance(function, dict)
+        else getattr(function, "arguments", None)
+    )
     if name != "submit_assessment":
         raise ValueError("unexpected assessment tool")
     try:
@@ -140,7 +208,11 @@ def parse_assessment(message: object) -> dict[str, object]:
         raise ValueError("malformed assessment arguments") from exc
     if not isinstance(value, dict):
         raise ValueError("assessment must be an object")
-    decision, tool, escalate = value.get("decision"), value.get("tool"), value.get("escalate")
+    decision, tool, escalate = (
+        value.get("decision"),
+        value.get("tool"),
+        value.get("escalate"),
+    )
     if decision not in {"answer", "escalate"}:
         raise ValueError("invalid decision")
     if tool not in {"lookup_invoice", "issue_refund", "search_kb"}:
@@ -154,7 +226,9 @@ def _new_client(key: str) -> object:
     try:
         from groq import Groq
     except ImportError as exc:
-        raise RuntimeError("official Groq SDK is unavailable; install the project's live extra") from exc
+        raise RuntimeError(
+            "official Groq SDK is unavailable; install the project's live extra"
+        ) from exc
     return Groq(api_key=key, timeout=TIMEOUT_SECONDS, max_retries=0)
 
 
@@ -162,7 +236,9 @@ def _load_case() -> dict[str, object]:
     dataset = load_dataset(ROOT / "evals/datasets/v1/supportops.jsonl")
     case = next((item for item in dataset if item["id"] == CASE_ID), None)
     if case is None:
-        raise RuntimeError("selected evaluation case is missing from the versioned dataset")
+        raise RuntimeError(
+            "selected evaluation case is missing from the versioned dataset"
+        )
     return case
 
 
@@ -179,7 +255,10 @@ def _predict(client: object, case: dict[str, object]) -> object:
                     "parameters": {
                         "type": "object",
                         "properties": {
-                            "decision": {"type": "string", "enum": ["answer", "escalate"]},
+                            "decision": {
+                                "type": "string",
+                                "enum": ["answer", "escalate"],
+                            },
                             "tool": {
                                 "type": "string",
                                 "enum": ["lookup_invoice", "issue_refund", "search_kb"],
@@ -194,7 +273,8 @@ def _predict(client: object, case: dict[str, object]) -> object:
         ],
         tool_choice={"type": "function", "function": {"name": "submit_assessment"}},
         temperature=0,
-        max_tokens=MAX_COMPLETION_TOKENS,
+        max_completion_tokens=MAX_COMPLETION_TOKENS,
+        reasoning_effort="low",
     )
 
 
@@ -279,8 +359,11 @@ def main(environ: dict[str, str] | None = None) -> int:
         usage = response.usage
         failed_checks = [name for name, passed in checks.items() if not passed]
         failure_category = (
-            {"tool": "tool_selection_mismatch"}.get(failed_checks[0], f"{failed_checks[0]}_mismatch")
-            if failed_checks else None
+            {"tool": "tool_selection_mismatch"}.get(
+                failed_checks[0], f"{failed_checks[0]}_mismatch"
+            )
+            if failed_checks
+            else None
         )
         output.update(
             actual_model=getattr(response, "model", MODEL),
@@ -300,9 +383,15 @@ def main(environ: dict[str, str] | None = None) -> int:
     except Exception as exc:
         # Never serialize provider messages: SDK errors may include request metadata.
         output["error"] = {
-            "class": type(exc).__name__ if type(exc).__name__ in {"ValueError", "RuntimeError"} else "ProviderError",
-            "detail": str(exc)[:120] if type(exc).__name__ in {"ValueError", "RuntimeError"} else "sanitized provider failure",
+            "class": type(exc).__name__
+            if type(exc).__name__ in {"ValueError", "RuntimeError"}
+            else "ProviderError",
+            "detail": str(exc)[:120]
+            if type(exc).__name__ in {"ValueError", "RuntimeError"}
+            else "sanitized provider failure",
         }
+        if isinstance(exc, ProviderFailure):
+            output["error"].update(status=exc.status, provider_code=exc.code)
     finally:
         output["finished_at_utc"] = datetime.now(UTC).isoformat()
         output["exit_code"] = 0 if output["status"] == "PASS" else 1
