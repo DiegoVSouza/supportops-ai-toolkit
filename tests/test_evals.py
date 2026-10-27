@@ -3,7 +3,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from supportops_toolkit.evals.runner import EvalReport, RegressionError, assert_regression, fake_runner, is_grounded, run_evals
+from supportops_toolkit.evals.runner import EvalReport, RegressionError, assert_regression, fake_runner, is_grounded, run_evals, validate_citations
 
 DATASET = Path("evals/datasets/v1/supportops.jsonl")
 
@@ -38,6 +38,14 @@ class EvalTests(unittest.TestCase):
         self.assertFalse(is_grounded("", "some evidence"))
         with self.assertRaises(ValueError):
             is_grounded("answer", "evidence", min_overlap=0)
+
+    def test_citation_ids_must_belong_to_current_retrieval_without_claiming_entailment(self):
+        matches = [{"source_id": "kb:refund-policy", "text": "Refunds may be requested."}]
+        self.assertTrue(validate_citations(["kb:refund-policy"], matches))
+        self.assertFalse(validate_citations([], matches))
+        self.assertFalse(validate_citations(["kb:unseen"], matches))
+        with self.assertRaises(ValueError):
+            validate_citations(["kb:refund-policy", "kb:refund-policy"], matches)
 
     def test_invalid_dataset_rejected(self):
         with tempfile.TemporaryDirectory() as directory:

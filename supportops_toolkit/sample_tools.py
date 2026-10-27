@@ -34,4 +34,14 @@ def issue_refund(invoice_id: str, amount: float, reason: str) -> dict:
 def search_kb(query: str) -> dict:
     terms = set(query.lower().split())
     ranked = sorted(ARTICLES.items(), key=lambda item: (-len(terms & set(item[1].lower().split())), item[0]))
-    return {"matches": [{"id": key, "text": text} for key, text in ranked[:2]]}
+    return {
+        "matches": [
+            {
+                "id": key,
+                "source_id": f"kb:{key}",
+                "text": text,
+                "trust": "untrusted",
+            }
+            for key, text in ranked[:2]
+        ]
+    }

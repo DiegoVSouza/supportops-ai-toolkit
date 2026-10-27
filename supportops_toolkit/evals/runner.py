@@ -83,6 +83,24 @@ def is_grounded(answer: str, evidence: str, *, min_overlap: float = 0.6) -> bool
     return bool(answer_terms) and len(answer_terms & evidence_terms) / len(answer_terms) >= min_overlap
 
 
+def validate_citations(citation_ids: list[str], supplied_sources: list[dict[str, Any]]) -> bool:
+    """Check citation membership only; this does not verify claim entailment."""
+    if not isinstance(citation_ids, list) or any(not isinstance(item, str) or not item for item in citation_ids):
+        raise ValueError("citation_ids must be a list of non-empty strings")
+    if len(citation_ids) != len(set(citation_ids)):
+        raise ValueError("citation_ids must be unique")
+    if not isinstance(supplied_sources, list):
+        raise ValueError("supplied_sources must be a list")
+    available = []
+    for source in supplied_sources:
+        if not isinstance(source, dict) or not isinstance(source.get("source_id"), str) or not source["source_id"]:
+            raise ValueError("each supplied source must have a non-empty source_id")
+        available.append(source["source_id"])
+    if len(available) != len(set(available)):
+        raise ValueError("supplied source IDs must be unique")
+    return bool(citation_ids) and set(citation_ids) <= set(available)
+
+
 def assert_regression(current: EvalReport, baseline: dict[str, float], max_drop: float = 0.05) -> None:
     if not 0 <= max_drop <= 1:
         raise ValueError("max_drop must be between 0 and 1")

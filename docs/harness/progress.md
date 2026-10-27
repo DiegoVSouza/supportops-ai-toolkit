@@ -46,3 +46,9 @@ The first real completion returned HTTP 400 after successful model preflight and
 - Added append-only reservation accounting, atomic cumulative caps, a cross-process lease, and read-only resume inspection. Unknown usage retains the original reservation; reserved or completed trials cannot be repeated.
 - Focused ledger checks: 6 passed. Full fake project gate: 54 tests plus regression/adversarial checks passed. `-S` dry-run exited 0 and generation exited 2 while campaign requirements remain unresolved. No provider request or Docker mutation occurred.
 - Dispatcher, authorized finite caps, human review, crash-after-dispatch recovery, lease integration into live execution and independent review remain incomplete. Phase status: `INCOMPLETE`; evidence: `artifacts/evidence/live-campaign-ledger/`.
+
+## 2026-10-27 — Phase 010 local retrieval provenance and injection boundary
+
+- The actual local `search_kb` output now includes stable `source_id`, exact source text, and `trust: untrusted`. The shared guard accepts explicit `user` or `retrieved` context and identifies detected retrieved injection as `indirect_prompt_injection`; a block verdict supplies no action or sanitized executable content.
+- Added citation-ID membership validation against only the current supplied retrieval results. It does not measure entailment. Local contract tests cover retrieval -> screening and citation membership. Historical datasets, splits, rubrics, graders, thresholds, campaign configuration/ledgers, and live artifacts remain unchanged.
+- Offline control checks are recorded in `artifacts/evidence/retrieval-provenance-injection/`. No credentials, network, provider, Docker, or external effects were used. External KB/RAG, tenant isolation, integrated model refusal, and real quality remain INCOMPLETE; human and independent review remain PENDING.

@@ -1,0 +1,16 @@
+$ uv run --locked python -m unittest discover -s tests -p test_guardrails.py -v
+test_adversarial_suite_all_cases_block (test_guardrails.GuardrailTests.test_adversarial_suite_all_cases_block) ... ok
+test_injection_blocks_and_normal_text_passes (test_guardrails.GuardrailTests.test_injection_blocks_and_normal_text_passes) ... ok
+test_pii_redaction_email_phone_and_card (test_guardrails.GuardrailTests.test_pii_redaction_email_phone_and_card) ... ok
+test_retrieved_injection_is_typed_as_indirect_and_blocked (test_guardrails.GuardrailTests.test_retrieved_injection_is_typed_as_indirect_and_blocked) ... ok
+test_retrieved_safe_text_is_untrusted_but_screenable_and_pii_redacted (test_guardrails.GuardrailTests.test_retrieved_safe_text_is_untrusted_but_screenable_and_pii_redacted) ... ok
+test_roles_allow_only_configured_tools (test_guardrails.GuardrailTests.test_roles_allow_only_configured_tools) ... ok
+test_step_token_time_limits_and_exact_boundary (test_guardrails.GuardrailTests.test_step_token_time_limits_and_exact_boundary) ... ok
+test_suite_rejects_smaller_than_required (test_guardrails.GuardrailTests.test_suite_rejects_smaller_than_required) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.007s
+
+OK
+
+exit_code=0

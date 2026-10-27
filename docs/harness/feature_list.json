@@ -5,6 +5,7 @@
     {"id": "token-limit-in-agent-path", "status": "INCOMPLETE", "evidence": "P02 does not own an LLM/agent runtime; callers must report usage via ExecutionLimits.consume(tokens=...)."},
     {"id": "schema-validation-subset", "status": "PASS_UNIT", "evidence": "artifacts/evidence/phase-002-regression-green.txt", "detail": "Documented subset rejects unknown keywords, bool-as-number, and non-finite inputs/outputs."},
     {"id": "fake-evals-and-adversarial-suite", "status": "PASS_FAKE_FIXTURES", "evidence": "artifacts/evidence/phase-002-check-full.txt"},
-    {"id": "cost-latency-model-quality", "status": "PENDING", "evidence": "No comparable authorized model runs are recorded."}
+    {"id": "cost-latency-model-quality", "status": "PENDING", "evidence": "No comparable authorized model runs are recorded."},
+    {"id": "local-retrieval-provenance-and-indirect-injection-screen", "status": "PASS_UNIT", "evidence": "artifacts/evidence/retrieval-provenance-injection/", "detail": "Local search returns stable untrusted source IDs; retrieved text can be screened by the shared heuristic guard. Citation-ID membership is checked only; external RAG, tenant isolation, model refusal, entailment, and live quality remain INCOMPLETE."}
   ]
 }

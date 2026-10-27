@@ -1,0 +1,17 @@
+$ uv run --locked python -m unittest discover -s tests -p test_tools.py -v
+test_ambiguous_timeout_never_retries_side_effect (test_tools.ToolContractTests.test_ambiguous_timeout_never_retries_side_effect) ... ok
+test_execution_limits_are_enforced_by_tool_call_path (test_tools.ToolContractTests.test_execution_limits_are_enforced_by_tool_call_path) ... ok
+test_input_shape_and_refund_bounds (test_tools.ToolContractTests.test_input_shape_and_refund_bounds) ... ok
+test_json_number_boundaries_reject_booleans_and_non_finite_values (test_tools.ToolContractTests.test_json_number_boundaries_reject_booleans_and_non_finite_values) ... ok
+test_registry_and_sample_tool_success (test_tools.ToolContractTests.test_registry_and_sample_tool_success) ... ok
+test_retrieved_instruction_is_data_and_screened_before_use (test_tools.ToolContractTests.test_retrieved_instruction_is_data_and_screened_before_use) ... ok
+test_retry_transient_but_fail_fatal (test_tools.ToolContractTests.test_retry_transient_but_fail_fatal) ... ok
+test_timeout_and_invalid_configuration (test_tools.ToolContractTests.test_timeout_and_invalid_configuration) ... ok
+test_unknown_invoice_and_output_validation (test_tools.ToolContractTests.test_unknown_invoice_and_output_validation) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.104s
+
+OK
+
+exit_code=0

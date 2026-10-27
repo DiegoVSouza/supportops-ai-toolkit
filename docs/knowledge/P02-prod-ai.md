@@ -51,3 +51,11 @@ When similar wording can imply different tenants, policies, dates, or actions. N
 ### PT — Quando o cache semântico é inseguro?
 
 Quando textos parecidos podem representar tenants, políticas, datas ou ações diferentes. Separe por contexto e versão, use limiar conservador e meça falsos hits em casos revisados antes de depender do cache.
+
+## Proveniência local e triagem de conteúdo recuperado
+
+O `search_kb` do P02 retorna `source_id` estável e marca resultados como `untrusted`. O caller ainda precisa tratar o texto como dado e usar `guard(text, role=..., source="retrieved")`; a heurística pode bloquear padrões conhecidos, mas uma aprovação não certifica segurança. `validate_citations` garante apenas que IDs citados pertencem aos resultados fornecidos na chamada atual. Isso não prova entailment. O projeto ainda não tem fonte externa, isolamento de tenant, runtime RAG nem avaliação live de recusa.
+
+### EN — What does retrieval provenance prove?
+
+P02's local search returns a stable `source_id` and labels retrieved content `untrusted`. Callers still treat the text as data and screen it with `guard(..., source="retrieved")`; a heuristic allow verdict is not a safety certification. `validate_citations` checks membership in the current supplied source list only, not entailment. P02 has no external source, tenant isolation, RAG runtime, or live refusal evaluation.

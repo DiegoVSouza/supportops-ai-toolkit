@@ -9,3 +9,7 @@ The first real completion returned HTTP 400 after successful model preflight and
 
 - The first P01 implementation found that an attempt completed without usage must preserve its original reservation. P02 carries a regression for this accounting rule; no P02 provider attempt was replayed.
 - Windows locks prevent reading the held lease file while another process owns it. The test checks sanitized operational metadata after normal lease release and still proves that concurrent acquisition is blocked.
+
+## 2026-10-27 — Phase 010 retrieval boundary
+
+- The first retrieval contract test assumed the local whitespace tokenizer treated `refund` and `refunds` as the same term. It does not; tied results are ordered by stable source ID. The test was corrected to use exact fixture terms. Search behavior and evaluation data were not changed.

@@ -1,0 +1,32 @@
+{
+  "commands": [
+    {
+      "command": "uv run --locked python -m unittest discover -s tests -p test_guardrails.py -v",
+      "exit_code": 0,
+      "output": "guardrail-tests.txt"
+    },
+    {
+      "command": "uv run --locked python -m unittest discover -s tests -p test_tools.py -v",
+      "exit_code": 0,
+      "output": "tool-tests.txt"
+    },
+    {
+      "command": "uv run --locked python -m unittest discover -s tests -p test_evals.py -v",
+      "exit_code": 0,
+      "output": "eval-tests.txt"
+    },
+    {
+      "command": "uv run --locked python scripts/check_fast.py",
+      "exit_code": 0,
+      "output": "check-fast.txt"
+    },
+    {
+      "command": "uv run --locked python scripts/check_full.py",
+      "exit_code": 0,
+      "output": "full-gate.txt"
+    }
+  ],
+  "protected_file_count": 71,
+  "protected_hashes_unchanged": true,
+  "changed_protected_paths": []
+}

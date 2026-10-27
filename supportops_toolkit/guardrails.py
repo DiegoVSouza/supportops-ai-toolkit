@@ -98,12 +98,20 @@ def classify_injection_fake(input_text: str) -> bool:
     return any(pattern.search(input_text) for pattern in _INJECTION_PATTERNS)
 
 
-def guard(input_text: str, *, role: str) -> GuardVerdict:
+def guard(input_text: str, *, role: str, source: str = "user") -> GuardVerdict:
+    """Screen untrusted text from a user or retrieved/tool source.
+
+    A passing heuristic verdict does not certify content as safe. Callers must
+    continue treating all user and retrieved text as data, never instructions.
+    """
+    if source not in {"user", "retrieved"}:
+        raise ValueError("source must be 'user' or 'retrieved'")
     reasons = []
     if role not in ROLE_TOOLS:
         return GuardVerdict("block", ("unknown_role",))
     if classify_injection_fake(input_text):
-        return GuardVerdict("block", ("prompt_injection_heuristic",))
+        reason = "indirect_prompt_injection" if source == "retrieved" else "prompt_injection_heuristic"
+        return GuardVerdict("block", (reason,))
     sanitized = redact_pii(input_text)
     if sanitized != input_text:
         reasons.append("pii_redacted")

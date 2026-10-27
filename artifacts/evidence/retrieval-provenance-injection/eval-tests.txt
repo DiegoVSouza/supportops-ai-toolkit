@@ -1,0 +1,14 @@
+$ uv run --locked python -m unittest discover -s tests -p test_evals.py -v
+test_citation_ids_must_belong_to_current_retrieval_without_claiming_entailment (test_evals.EvalTests.test_citation_ids_must_belong_to_current_retrieval_without_claiming_entailment) ... ok
+test_deliberate_degradation_fails_gate (test_evals.EvalTests.test_deliberate_degradation_fails_gate) ... ok
+test_groundedness_compares_answer_terms_to_evidence (test_evals.EvalTests.test_groundedness_compares_answer_terms_to_evidence) ... ok
+test_invalid_dataset_rejected (test_evals.EvalTests.test_invalid_dataset_rejected) ... ok
+test_regression_tolerance_boundary (test_evals.EvalTests.test_regression_tolerance_boundary) ... ok
+test_versioned_dataset_fake_baseline (test_evals.EvalTests.test_versioned_dataset_fake_baseline) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.005s
+
+OK
+
+exit_code=0
