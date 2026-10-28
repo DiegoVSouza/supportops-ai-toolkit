@@ -1,0 +1,96 @@
+test_ambiguous_timeout_never_retries_side_effect (test_tools.ToolContractTests.test_ambiguous_timeout_never_retries_side_effect) ... ok
+test_execution_limits_are_enforced_by_tool_call_path (test_tools.ToolContractTests.test_execution_limits_are_enforced_by_tool_call_path) ... ok
+test_input_shape_and_refund_bounds (test_tools.ToolContractTests.test_input_shape_and_refund_bounds) ... ok
+test_json_number_boundaries_reject_booleans_and_non_finite_values (test_tools.ToolContractTests.test_json_number_boundaries_reject_booleans_and_non_finite_values) ... ok
+test_process_interruptions_propagate_without_tool_retry (test_tools.ToolContractTests.test_process_interruptions_propagate_without_tool_retry) ...
+  test_process_interruptions_propagate_without_tool_retry (test_tools.ToolContractTests.test_process_interruptions_propagate_without_tool_retry) (interruption='KeyboardInterrupt') ... ERROR
+  test_process_interruptions_propagate_without_tool_retry (test_tools.ToolContractTests.test_process_interruptions_propagate_without_tool_retry) (interruption='SystemExit') ... ERROR
+test_registry_and_sample_tool_success (test_tools.ToolContractTests.test_registry_and_sample_tool_success) ... ok
+test_retrieved_instruction_is_data_and_screened_before_use (test_tools.ToolContractTests.test_retrieved_instruction_is_data_and_screened_before_use) ... ok
+test_retry_transient_but_fail_fatal (test_tools.ToolContractTests.test_retry_transient_but_fail_fatal) ... ok
+test_timeout_and_invalid_configuration (test_tools.ToolContractTests.test_timeout_and_invalid_configuration) ... ok
+test_unknown_invoice_and_output_validation (test_tools.ToolContractTests.test_unknown_invoice_and_output_validation) ... ok
+test_zero_overlap_search_returns_no_attributed_sources (test_tools.ToolContractTests.test_zero_overlap_search_returns_no_attributed_sources) ... FAIL
+
+======================================================================
+ERROR: test_process_interruptions_propagate_without_tool_retry (test_tools.ToolContractTests.test_process_interruptions_propagate_without_tool_retry) (interruption='KeyboardInterrupt')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\estudo\Golpe\lab\projects\p02\supportops_toolkit\tools.py", line 146, in __call__
+    result = future.result(timeout=timeout_s)
+  File "C:\Users\dvsdi\AppData\Local\Programs\Python\Python313\Lib\concurrent\futures\_base.py", line 449, in result
+    return self.__get_result()
+           ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\dvsdi\AppData\Local\Programs\Python\Python313\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "C:\Users\dvsdi\AppData\Local\Programs\Python\Python313\Lib\concurrent\futures\thread.py", line 59, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "C:\estudo\Golpe\lab\projects\p02\tests\test_tools.py", line 108, in interrupted_handler
+    raise interruption()
+KeyboardInterrupt
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\estudo\Golpe\lab\projects\p02\tests\test_tools.py", line 118, in test_process_interruptions_propagate_without_tool_retry
+    interrupted()
+    ~~~~~~~~~~~^^
+  File "C:\estudo\Golpe\lab\projects\p02\supportops_toolkit\tools.py", line 159, in __call__
+    raise ToolError("tool_failed", str(error), retryable=False) from exc
+supportops_toolkit.tools.ToolError
+
+======================================================================
+ERROR: test_process_interruptions_propagate_without_tool_retry (test_tools.ToolContractTests.test_process_interruptions_propagate_without_tool_retry) (interruption='SystemExit')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\estudo\Golpe\lab\projects\p02\supportops_toolkit\tools.py", line 146, in __call__
+    result = future.result(timeout=timeout_s)
+  File "C:\Users\dvsdi\AppData\Local\Programs\Python\Python313\Lib\concurrent\futures\_base.py", line 449, in result
+    return self.__get_result()
+           ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\dvsdi\AppData\Local\Programs\Python\Python313\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "C:\Users\dvsdi\AppData\Local\Programs\Python\Python313\Lib\concurrent\futures\thread.py", line 59, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "C:\estudo\Golpe\lab\projects\p02\tests\test_tools.py", line 108, in interrupted_handler
+    raise interruption()
+SystemExit
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\estudo\Golpe\lab\projects\p02\tests\test_tools.py", line 118, in test_process_interruptions_propagate_without_tool_retry
+    interrupted()
+    ~~~~~~~~~~~^^
+  File "C:\estudo\Golpe\lab\projects\p02\supportops_toolkit\tools.py", line 159, in __call__
+    raise ToolError("tool_failed", str(error), retryable=False) from exc
+supportops_toolkit.tools.ToolError
+
+======================================================================
+FAIL: test_zero_overlap_search_returns_no_attributed_sources (test_tools.ToolContractTests.test_zero_overlap_search_returns_no_attributed_sources)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\estudo\Golpe\lab\projects\p02\tests\test_tools.py", line 23, in test_zero_overlap_search_returns_no_attributed_sources
+    self.assertEqual(result["matches"], [])
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Lists differ: [{'id': 'delivery-policy', 'source_id': 'k[281 chars]ed'}] != []
+
+First list contains 2 additional elements.
+First extra element 0:
+{'id': 'delivery-policy', 'source_id': 'kb:delivery-policy', 'text': 'Delivery status is available from the carrier after dispatch.', 'trust': 'untrusted'}
+
++ []
+- [{'id': 'delivery-policy',
+-   'source_id': 'kb:delivery-policy',
+-   'text': 'Delivery status is available from the carrier after dispatch.',
+-   'trust': 'untrusted'},
+-  {'id': 'refund-policy',
+-   'source_id': 'kb:refund-policy',
+-   'text': 'Refunds under 100 dollars may be requested within 30 days. Escalate '
+-           'exceptions.',
+-   'trust': 'untrusted'}]
+
+----------------------------------------------------------------------
+Ran 11 tests in 0.098s
+
+FAILED (failures=1, errors=2)

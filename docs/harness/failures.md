@@ -13,3 +13,8 @@ The first real completion returned HTTP 400 after successful model preflight and
 ## 2026-10-27 — Phase 010 retrieval boundary
 
 - The first retrieval contract test assumed the local whitespace tokenizer treated `refund` and `refunds` as the same term. It does not; tied results are ordered by stable source ID. The test was corrected to use exact fixture terms. Search behavior and evaluation data were not changed.
+
+## 2026-10-27 — Phase 011 unrelated retrieval and swallowed interruption
+
+- `search_kb` ranked every local article even when the query had zero term overlap, allowing unrelated documents to be attributed as retrieved evidence. It now filters zero-overlap results while preserving deterministic ordering and untrusted provenance; an offline regression requires an empty result and rejects citations to absent sources.
+- `ToolSpec.__call__` caught `BaseException` from `Future.result()` and converted `KeyboardInterrupt`/`SystemExit` into ordinary `ToolError`. It now catches only `Exception` for tool-failure classification; process-control interruptions propagate and are not retried. Regression tests retain ordinary explicit safe-retry and timeout uncertainty behavior.

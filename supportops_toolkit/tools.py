@@ -151,7 +151,7 @@ class ToolSpec:
                 # The handler may still be running after this thread times out. Its
                 # side effect is indeterminate, so retrying can duplicate it.
                 raise ToolError("timeout", f"{self.name} exceeded {timeout_s}s; outcome is indeterminate", retryable=False) from exc
-            except BaseException as exc:
+            except Exception as exc:
                 error = exc
                 if classify_error(error) != "retryable" or attempts > self.retries:
                     if isinstance(error, ToolError):

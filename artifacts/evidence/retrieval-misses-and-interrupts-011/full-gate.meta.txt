@@ -1,0 +1,3 @@
+COMMAND: .\.venv\Scripts\python.exe scripts/check_full.py
+ENV: LLM_MODE=fake; no provider credentials loaded
+EXIT_CODE: 0

@@ -33,7 +33,14 @@ def issue_refund(invoice_id: str, amount: float, reason: str) -> dict:
       schema_out={"type": "object", "required": ["matches"]})
 def search_kb(query: str) -> dict:
     terms = set(query.lower().split())
-    ranked = sorted(ARTICLES.items(), key=lambda item: (-len(terms & set(item[1].lower().split())), item[0]))
+    scored = [
+        (key, text, len(terms & set(text.lower().split())))
+        for key, text in ARTICLES.items()
+    ]
+    ranked = sorted(
+        (item for item in scored if item[2] > 0),
+        key=lambda item: (-item[2], item[0]),
+    )
     return {
         "matches": [
             {
@@ -42,6 +49,6 @@ def search_kb(query: str) -> dict:
                 "text": text,
                 "trust": "untrusted",
             }
-            for key, text in ranked[:2]
+            for key, text, _score in ranked[:2]
         ]
     }

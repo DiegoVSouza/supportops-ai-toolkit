@@ -1,0 +1,2 @@
+COMMAND: .\.venv\Scripts\python.exe -m unittest discover -s tests -p test_tools.py -v
+EXIT_CODE: 0

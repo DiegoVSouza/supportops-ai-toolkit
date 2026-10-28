@@ -18,6 +18,11 @@ class ToolContractTests(unittest.TestCase):
         self.assertTrue(validate_citations([matches[0]["source_id"]], matches))
         self.assertFalse(validate_citations(["kb:not-supplied"], matches))
 
+    def test_zero_overlap_search_returns_no_attributed_sources(self):
+        result = search_kb(query="unrelated zebra quantum")
+        self.assertEqual(result["matches"], [])
+        self.assertFalse(validate_citations(["kb:refund-policy"], result["matches"]))
+
     def test_retrieved_instruction_is_data_and_screened_before_use(self):
         from supportops_toolkit import sample_tools
         from supportops_toolkit.guardrails import guard
@@ -92,6 +97,26 @@ class ToolContractTests(unittest.TestCase):
             side_effect()
         time.sleep(0.05)  # Let the uncancellable handler finish before inspecting its effect count.
         self.assertEqual(calls["count"], 1)
+
+    def test_process_interruptions_propagate_without_tool_retry(self):
+        for interruption in (KeyboardInterrupt, SystemExit):
+            with self.subTest(interruption=interruption.__name__):
+                calls = {"count": 0}
+
+                def interrupted_handler():
+                    calls["count"] += 1
+                    raise interruption()
+
+                interrupted_handler.__name__ = "interrupted_" + interruption.__name__.lower()
+                interrupted = tool(
+                    schema_in={"type": "object"},
+                    schema_out={"type": "integer"},
+                    retries=3,
+                    base_delay_s=0,
+                )(interrupted_handler)
+                with self.assertRaises(interruption):
+                    interrupted()
+                self.assertEqual(calls["count"], 1)
 
     def test_json_number_boundaries_reject_booleans_and_non_finite_values(self):
         @tool(schema_in={"type": "object", "required": ["value"], "properties": {"value": {"type": "number"}}},
