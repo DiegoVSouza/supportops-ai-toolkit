@@ -1,0 +1,13 @@
+cwd: C:\estudo\Golpe\lab\projects\p02
+command: uv run --locked python -m unittest discover -s tests -p test_fixture_retrieval.py -v
+exit_code: 0
+output:
+test_detected_injection_refuses_without_returning_content (test_fixture_retrieval.FixtureRetrievalTests.test_detected_injection_refuses_without_returning_content) ... ok
+test_no_evidence_refuses (test_fixture_retrieval.FixtureRetrievalTests.test_no_evidence_refuses) ... ok
+test_scope_attribution_and_order (test_fixture_retrieval.FixtureRetrievalTests.test_scope_attribution_and_order) ... ok
+test_untrusted_or_malformed_identity_is_rejected (test_fixture_retrieval.FixtureRetrievalTests.test_untrusted_or_malformed_identity_is_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.000s
+
+OK

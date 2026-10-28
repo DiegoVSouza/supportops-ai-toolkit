@@ -60,3 +60,7 @@ The first real completion returned HTTP 400 after successful model preflight and
 - Red tests reproduced both defects. Focused tool suite passed 11 tests; fast check and complete fake full gate passed; 60 unit tests and the 35-case adversarial suite passed. Fake evaluation remains fixture-only.
 - The 71 protected paths from phase 010 (evaluation data, rubric/baseline, live history, campaign, ledger and prior evidence) have identical SHA-256 before/after hashes. No provider, credentials, external network, Docker or refund effect was used. Evidence: `artifacts/evidence/retrieval-misses-and-interrupts-011/`.
 - External KB/RAG, tenant isolation, integrated model refusal, entailment verification, live quality, and independent/human review remain INCOMPLETE/PENDING.
+
+## 2026-10-28 - Phase 012 fixture retrieval
+
+- Added tenant-scoped synthetic fixture retrieval with attribution and refusal on no evidence or detected injection. Four focused tests and the full fake gate passed (64 tests). External identity, real RAG, model quality and independent review remain pending; see artifacts/evidence/fixture-retrieval-012/.
