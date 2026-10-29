@@ -1,5 +1,11 @@
 # Progress
 
+## 2026-10-29 — Phase 015 accounted protocol preparation
+
+- Added a fixture-only adapter matching the shared preview/complete envelope and accounted receipt schema. Tenant-scoped retrieval feeds bounded input; local durable reservations precede dispatch, survive uncertainty and enforce a cumulative four-request ceiling. Duplicate receipts and invalid/model-mismatched usage fail closed.
+- Six focused regressions and the locked fast/full gates pass (78 unit tests). Attempt 1 found an unclosed SQLite connection in test cleanup; explicit closing fixed it on attempt 2. Evidence: `artifacts/evidence/accounted-protocol-015/`.
+- This ceiling is an offline prototype limit, not a live allocation. Finite shared migration, committed live manifest and actual provider integration remain pending; no credentials, network or Docker were used.
+
 - Kit initialization completed.
 
 ## 2026-10-15 — Roadmap remediation phase 002
