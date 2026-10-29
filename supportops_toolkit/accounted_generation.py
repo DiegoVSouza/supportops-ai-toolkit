@@ -18,6 +18,11 @@ class OperationBlocked(RuntimeError):
 def run(path: Path, request_id: str, tenant: str, query: str, documents: list[dict], session):
     if getattr(session, "provenance", None) != "fixture":
         raise OperationBlocked("fixture_session_required")
+    return _run(path, request_id, tenant, query, documents, session, campaign="fixture-protocol-v1")
+
+
+def _run(path: Path, request_id: str, tenant: str, query: str, documents: list[dict], session, *, campaign):
+    """Owning controller supplies the authorized session after provenance checks."""
     if not isinstance(request_id, str) or not re.fullmatch(r"fixture-[A-Za-z0-9_-]{1,48}", request_id):
         raise OperationBlocked("invalid_request")
     evidence = retrieve(tenant, query, documents)
@@ -30,8 +35,8 @@ def run(path: Path, request_id: str, tenant: str, query: str, documents: list[di
         "temperature": 0, "reasoning_effort": "low", "include_reasoning": False}
     if len(json.dumps(payload, ensure_ascii=False).encode("utf-8")) > 4096:
         raise OperationBlocked("input_bound_exceeded")
-    envelope = {"campaign_id": "fixture-protocol-v1", "case_id": request_id,
-                "trial": 1, "call_index": 1, "timeout_seconds": 30, "payload": payload}
+    envelope = {"campaign_id": campaign, "case_id": request_id,
+                "trial": 1, "call_index": 1, "timeout_seconds": 20, "payload": payload}
     with closing(sqlite3.connect(path, timeout=5)) as db:
         db.execute("PRAGMA synchronous=FULL")
         db.execute("CREATE TABLE IF NOT EXISTS operations (id TEXT PRIMARY KEY, status TEXT NOT NULL, receipt TEXT, input_tokens INTEGER, output_tokens INTEGER)")
@@ -66,5 +71,5 @@ def run(path: Path, request_id: str, tenant: str, query: str, documents: list[di
         db.execute("UPDATE operations SET status='ok',receipt=?,input_tokens=?,output_tokens=? WHERE id=? AND status='reserved'",
                    (result["attempt_id"], usage["input_tokens"], usage["output_tokens"], request_id))
         db.commit()
-    return {"status": "ok", "provenance": "fixture", "receipt": result["attempt_id"],
+    return {"status": "ok", "provenance": session.provenance, "receipt": result["attempt_id"],
             "usage": dict(usage), "source_ids": [row["source_id"] for row in evidence["sources"]]}

@@ -1,0 +1,4 @@
+Official documentation consulted 2026-10-29:
+- https://console.groq.com/docs/models lists openai/gpt-oss-20b, economic input/output rates 0.075/0.30 USD per million (not proof of billed tier).
+- https://console.groq.com/docs/rate-limits explains organization-level limits and smaller authenticated limits. Existing conservative caps remain; authenticated catalog/headers are checked by ProviderSession before generation.
+No paid tier or alternate model is authorized. CLI --help verified through uv run --locked python scripts/local_operation.py --help, exit 0.
