@@ -70,3 +70,9 @@ The first real completion returned HTTP 400 after successful model preflight and
 ## 2026-10-28 - Phase 012 fixture retrieval
 
 - Added tenant-scoped synthetic fixture retrieval with attribution and refusal on no evidence or detected injection. Four focused tests and the full fake gate passed (64 tests). External identity, real RAG, model quality and independent review remain pending; see artifacts/evidence/fixture-retrieval-012/.
+
+## 2026-10-29 — Phase 016 accounted local operation
+
+- Fixed synthetic tenant retrieval now reaches the shared accounted ProviderSession after explicit live opt-in, committed source/manifest verification and durable reservation. Unknown work blocks a new identity; no retries or provider fallback.
+- Locked full fake gate passed 82 unit tests plus fixture/adversarial checks. One live synthetic call passed: 141 input / 37 output tokens, one of four finite calls used. Evidence: artifacts/evidence/accounted-local-operation-016/. Candidate 5f8d62e; fingerprint 6dc0cac2de3cc1c3e9240d3baf978e95478bb5fbf1dd1887f6eb8dbdb07c48c4.
+- Operational transport acceptance does not establish answer quality or production identity/corpus acceptance. Human review, quality, holdout and promotion remain pending.

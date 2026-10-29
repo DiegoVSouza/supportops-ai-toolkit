@@ -1,0 +1,51 @@
+{
+  "logical": [
+    {
+      "id": "fixture-local-01",
+      "status": "ok",
+      "receipt": "965e76c90bfc46e39b08505a9b1e870e",
+      "input_tokens": 141,
+      "output_tokens": 37
+    }
+  ],
+  "provider": [
+    {
+      "sequence": 1,
+      "attempt_id": "965e76c90bfc46e39b08505a9b1e870e",
+      "event": "reserved",
+      "ordinal": 69,
+      "campaign": "local-operation-v1",
+      "case_id": "fixture-local-01",
+      "trial": 1,
+      "call_index": 1,
+      "reserved_at": 1793298360.4045556,
+      "reserved_input": 929,
+      "reserved_output": 512,
+      "reserved_cost": "0.000223275",
+      "actual_input": null,
+      "actual_output": null,
+      "actual_cost": null,
+      "status": null,
+      "feedback": "{\"credential_slot\": 3}"
+    },
+    {
+      "sequence": 2,
+      "attempt_id": "965e76c90bfc46e39b08505a9b1e870e",
+      "event": "completed",
+      "ordinal": 69,
+      "campaign": "local-operation-v1",
+      "case_id": "fixture-local-01",
+      "trial": 1,
+      "call_index": 1,
+      "reserved_at": 1793298360.4045556,
+      "reserved_input": 929,
+      "reserved_output": 512,
+      "reserved_cost": "0.000223275",
+      "actual_input": 141,
+      "actual_output": 37,
+      "actual_cost": "0.000021675",
+      "status": "ok",
+      "feedback": "{\"account_ordinal\": 69, \"observed_at\": 1793298360.922962, \"remaining_requests\": 999, \"remaining_tokens\": 7590, \"request_limit\": 1000, \"request_reset_seconds\": 86.4, \"token_limit\": 8000, \"token_reset_seconds\": 3.074}"
+    }
+  ]
+}

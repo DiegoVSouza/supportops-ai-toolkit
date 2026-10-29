@@ -1,3 +1,5 @@
 PENDING locked fake controls, immutable source binding and single accounted synthetic operation. Quality and human review pending.
 
 PASS initial locked fake checks: four focused tests; fast/full gate exit 0, 82 unit tests plus fixture/adversarial checks. Evidence checks-attempt1.json. Live binding and smoke PENDING.
+
+PASS one accounted live synthetic operation on candidate 5f8d62e10698772b16e4381df0257a16b0cdcd6f, fingerprint 6dc0cac2de3cc1c3e9240d3baf978e95478bb5fbf1dd1887f6eb8dbdb07c48c4. Command/cwd/exit/output: live-attempt1.json, exit 0. Provider usage 141 input / 37 output, receipt 965e76c90bfc46e39b08505a9b1e870e. Read-only reconciliation matched the logical receipt to reserved/completed provider rows (reconciled.json), one call used / three remain. No replay or raw response persisted. Provider usage and logical usage are two views of the same call. Actual billing unknown; paid authorization USD 0. Transport acceptance only: quality, external corpus/identity, reviews, holdout and promotion remain PENDING.

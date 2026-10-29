@@ -1,0 +1,6 @@
+{
+  "command": "LLM_MODE=live uv run --locked python scripts/local_operation.py --request-id fixture-local-01",
+  "cwd": "C:\\estudo\\Golpe\\lab\\projects\\p02",
+  "exit_code": 0,
+  "output": "{\"status\": \"ok\", \"provenance\": \"live\", \"receipt\": \"965e76c90bfc46e39b08505a9b1e870e\", \"usage\": {\"input_tokens\": 141, \"output_tokens\": 37}, \"source_ids\": [\"fixture:invoice-status\"]}\r\n"
+}
