@@ -76,7 +76,7 @@ These lexical checks are defense-in-depth, not a guarantee against novel attacks
 - Offline eval gate: `LLM_MODE=fake python -m supportops_toolkit.evals.runner`.
 - Adversarial suite: `python -m supportops_toolkit.adversarial`.
 - Full deterministic CI gate: `python scripts/check_full.py`.
-- Live Groq evaluation: set `$env:LLM_MODE = 'live'`, then run `uv run --extra live python scripts/run_live_groq_eval.py`. It checks model availability and evaluates one versioned SupportOps case, using the lab-root `.env` without printing credentials. It exits nonzero when a domain assertion fails. The free-plan allowance is required; cost remains `PENDING` until actual billing is confirmed. See `.planning/phases/004-groq-live/` for limits and evidence.
+- Live Groq evaluation is unavailable until this project has an accounted execution boundary and its source and identity prerequisites. Inspect the provider-free preparation with `uv run --locked python scripts/run_live_campaign.py --stage pilot --dry-run`. The historical direct Groq entry point is disabled.
 - External integrations and E2E: `INCOMPLETE` (no connectors are part of this project).
 
 Evidence files under `artifacts/evidence/` record commands, exit codes, and output. See `.planning/phases/001-production-toolkit/` for the spec, plan, and verify checklist.

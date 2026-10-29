@@ -182,5 +182,22 @@ class LiveGroqTests(unittest.TestCase):
         self.assertEqual(operation.call_count, 1)
 
 
+class LegacyEntryPointGuardTests(unittest.TestCase):
+    def test_live_entry_refuses_before_credentials_provider_or_artifact(self):
+        from unittest.mock import patch
+
+        from scripts.run_live_groq_eval import main
+
+        with (
+            patch("scripts.run_live_groq_eval.load_root_env") as credentials,
+            patch("scripts.run_live_groq_eval._new_client") as provider,
+            patch("scripts.run_live_groq_eval.Path.write_text") as write,
+        ):
+            self.assertEqual(main({"LLM_MODE": "live"}), 2)
+        credentials.assert_not_called()
+        provider.assert_not_called()
+        write.assert_not_called()
+
+
 if __name__ == "__main__":
     unittest.main()

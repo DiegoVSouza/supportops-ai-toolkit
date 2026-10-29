@@ -1,0 +1,8 @@
+[
+  {
+    "command": "C:\\estudo\\Golpe\\lab\\projects\\p02\\.venv\\Scripts\\python.exe -m pytest -q tests/test_live_groq_eval.py",
+    "cwd": "C:\\estudo\\Golpe\\lab\\projects\\p02",
+    "exit_code": 1,
+    "output": "C:\\estudo\\Golpe\\lab\\projects\\p02\\.venv\\Scripts\\python.exe: No module named pytest\n"
+  }
+]

@@ -205,84 +205,8 @@ def write_evidence(result: dict[str, object]) -> None:
 
 
 def main() -> int:
-    result: dict[str, object] = {
-        "command": "python scripts/run_live_free_eval.py",
-        "provider": "openrouter",
-        "model": MODEL,
-        "budget_cap_usd": str(MAX_BUDGET_USD),
-        "status": "INCOMPLETE",
-        "exit_code": 1,
-        "started_at_utc": datetime.now(UTC).isoformat(),
-        "groundedness": "NOT_EVALUATED: the synthetic dataset has no independent retrieval context",
-        "cases": [],
-    }
-    exit_code = 1
-    try:
-        load_root_env()
-        api_key = os.getenv("OPENROUTER_API_KEY", "").strip()
-        if not api_key:
-            raise RuntimeError("OPENROUTER_API_KEY is missing")
-        catalog_entry = verify_zero_price_model(api_key)
-        result["catalog_price"] = {
-            "prompt": catalog_entry["pricing"]["prompt"],
-            "completion": catalog_entry["pricing"]["completion"],
-        }
-        dataset = load_dataset(ROOT / "evals/datasets/v1/supportops.jsonl")
-        if len(dataset) != MAX_CASES:
-            raise RuntimeError(f"expected exactly {MAX_CASES} evaluation cases")
-        token_total = {"prompt_tokens": 0, "completion_tokens": 0}
-        latency_total = 0
-        cases = []
-        for case in dataset:
-            try:
-                row, token_use, latency = evaluate_case(api_key, case)
-            except RuntimeError as exc:
-                error = str(exc)
-                cases.append({"id": case["id"], "status": "ERROR", "error": error[:180]})
-                result["cases"] = cases
-                result["completed_cases"] = len(cases)
-                write_evidence(result)
-                if "HTTP 429" in error:
-                    raise
-                continue
-            row["status"] = "PASS"
-            cases.append(row)
-            for name, count in token_use.items():
-                token_total[name] += count
-            latency_total += latency
-            result["cases"] = cases
-            result["usage"] = token_total
-            result["completed_cases"] = len(cases)
-            write_evidence(result)
-        valid_cases = [case for case in cases if case.get("status") == "PASS"]
-        total = len(valid_cases)
-        if not total:
-            raise RuntimeError("no valid model assessments were returned")
-        complete = total == MAX_CASES
-        result.update(
-            status="PASS" if complete else "INCOMPLETE",
-            exit_code=0 if complete else 1,
-            completed_cases=len(cases),
-            valid_case_count=total,
-            failed_case_count=MAX_CASES - total,
-            usage=token_total,
-            total_latency_ms=latency_total,
-            average_latency_ms=round(latency_total / total),
-            metrics={
-                metric: sum(bool(case["checks"][metric]) for case in valid_cases) / total
-                for metric in ("decision", "tool", "escalation")
-            },
-            estimated_cost_usd="0",
-        )
-        exit_code = 0 if complete else 1
-    except (RuntimeError, ValueError, OSError, HTTPError, URLError, json.JSONDecodeError) as exc:
-        result["error"] = f"{type(exc).__name__}: {str(exc)[:180]}"
-    finally:
-        result["finished_at_utc"] = datetime.now(UTC).isoformat()
-        result["exit_code"] = exit_code
-        write_evidence(result)
-        print(json.dumps(result, sort_keys=True))
-    return exit_code
+    print(json.dumps({"status": "INCOMPLETE", "reason": "accounted_guard_required", "provider_accessed": False, "credentials_read": False}))
+    return 2
 
 
 if __name__ == "__main__":

@@ -1,3 +1,3 @@
 # Verification
 
-PENDING fail-closed test, locked fake gate and sanitized evidence. Real source, trusted tenant identity, accounted synthetic live dispatch, quality and human evaluation remain INCOMPLETE/PENDING.
+PASS fail-closed entry tests and locked fake full gate: 13 focused tests and 66 total tests, plus fixture evaluation and adversarial checks. First focused attempt failed because this locked environment has no pytest; the second failed because the new test lacked a mock import. Both failures are preserved; the corrected third attempt and final rechecks passed. Both historical Groq and OpenRouter entry points exit 2 before credentials, provider or artifact access. README points to the provider-free campaign dry-run. Evidence: `artifacts/evidence/disable-unaccounted-live-013/`. Real source, trusted tenant identity, accounted synthetic live dispatch, quality and human evaluation remain INCOMPLETE/PENDING.

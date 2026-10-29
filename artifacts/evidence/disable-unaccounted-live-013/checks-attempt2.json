@@ -1,0 +1,8 @@
+[
+  {
+    "command": "C:\\estudo\\Golpe\\lab\\projects\\p02\\.venv\\Scripts\\python.exe -m unittest discover -s tests -p test_live_groq_eval.py",
+    "cwd": "C:\\estudo\\Golpe\\lab\\projects\\p02",
+    "exit_code": 1,
+    "output": "E............\n======================================================================\nERROR: test_live_entry_refuses_before_credentials_provider_or_artifact (test_live_groq_eval.LegacyEntryPointGuardTests.test_live_entry_refuses_before_credentials_provider_or_artifact)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"C:\\estudo\\Golpe\\lab\\projects\\p02\\tests\\test_live_groq_eval.py\", line 190, in test_live_entry_refuses_before_credentials_provider_or_artifact\n    patch(\"scripts.run_live_groq_eval.load_root_env\") as credentials,\n    ^^^^^\nNameError: name 'patch' is not defined\n\n----------------------------------------------------------------------\nRan 13 tests in 0.010s\n\nFAILED (errors=1)\n"
+  }
+]

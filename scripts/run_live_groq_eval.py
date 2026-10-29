@@ -311,93 +311,18 @@ def _write_result(result: dict[str, object]) -> None:
 
 
 def main(environ: dict[str, str] | None = None) -> int:
-    output: dict[str, object] = {
-        "command": "LLM_MODE=live uv run --extra live python scripts/run_live_groq_eval.py",
-        "provider": "groq",
-        "requested_model": MODEL,
-        "case_id": CASE_ID,
-        "status": "INCOMPLETE",
-        "started_at_utc": datetime.now(UTC).isoformat(),
-        "retry_count": 0,
-        "rotated_key_count": 0,
-        "usage": "PENDING",
-        "cost_usd": "PENDING",
-    }
-    try:
-        values = load_root_env(environ)
-        require_live_mode(values)
-        keys = configured_keys(values)
-        if not keys:
-            raise RuntimeError("no Groq API key is configured")
-        case = _load_case()
-        preflight_client = _new_client(keys[0])
-        catalog = preflight_client.models.list()
-        verify_model_available(catalog)
-        output["model_available"] = True
-
-        # The user explicitly designated these credentials for the free plan. The public
-        # developer-plan token price is nonzero; only the free-plan allowance is permitted.
-        response, rotated = run_with_rotation(
-            keys,
-            _new_client,
-            lambda client: _predict(client, case),
+    # This historical runner lacks the shared accounting and uncertainty guards.
+    print(
+        json.dumps(
+            {
+                "status": "INCOMPLETE",
+                "reason": "accounted_guard_required",
+                "provider_accessed": False,
+                "credentials_read": False,
+            }
         )
-        output["rotated_key_count"] = rotated
-        output["retry_count"] = rotated
-        choice = response.choices[0]
-        prediction = parse_assessment(choice.message)
-        checks = {
-            "decision": prediction["decision"] == case["expected_decision"],
-            "tool": prediction["tool"] == case["expected_tool"],
-            "escalation": prediction["escalate"] == case["expected_escalate"],
-        }
-        expected = {
-            "decision": case["expected_decision"],
-            "tool": case["expected_tool"],
-            "escalate": case["expected_escalate"],
-        }
-        usage = response.usage
-        failed_checks = [name for name, passed in checks.items() if not passed]
-        failure_category = (
-            {"tool": "tool_selection_mismatch"}.get(
-                failed_checks[0], f"{failed_checks[0]}_mismatch"
-            )
-            if failed_checks
-            else None
-        )
-        output.update(
-            actual_model=getattr(response, "model", MODEL),
-            prediction=prediction,
-            expected=expected,
-            checks=checks,
-            metrics={name: int(value) for name, value in checks.items()},
-            failure_category=failure_category,
-            usage={
-                "prompt_tokens": getattr(usage, "prompt_tokens", None),
-                "completion_tokens": getattr(usage, "completion_tokens", None),
-                "total_tokens": getattr(usage, "total_tokens", None),
-            },
-            status="PASS" if all(checks.values()) else "FAIL",
-            cost_usd="PENDING",
-        )
-    except Exception as exc:
-        # Never serialize provider messages: SDK errors may include request metadata.
-        output["error"] = {
-            "class": type(exc).__name__
-            if type(exc).__name__ in {"ValueError", "RuntimeError"}
-            else "ProviderError",
-            "detail": str(exc)[:120]
-            if type(exc).__name__ in {"ValueError", "RuntimeError"}
-            else "sanitized provider failure",
-        }
-        if isinstance(exc, ProviderFailure):
-            output["error"].update(status=exc.status, provider_code=exc.code)
-    finally:
-        output["finished_at_utc"] = datetime.now(UTC).isoformat()
-        output["exit_code"] = 0 if output["status"] == "PASS" else 1
-        _write_result(output)
-        print(json.dumps(output, sort_keys=True))
-    return int(output["exit_code"])
+    )
+    return 2
 
 
 if __name__ == "__main__":
