@@ -1,5 +1,16 @@
 # Toolkit de IA SupportOps
 
+<!-- case:start -->
+## O case
+
+- **Problema.** Uma chamada de ferramenta precisa de schema, limite e caminho de recusa antes de um modelo agir sobre ela.
+- **Decisão.** Só biblioteca padrão: schemas de tools, retries seguros, limites de passos e tempo, evals code-first, suíte adversarial e helpers de custo.
+- **Medido.** 82 testes unitários mais checagens de fixture e adversariais no gate fake travado. Uma chamada sintética live: 141 tokens de entrada e 37 de saída, uma de quatro chamadas finitas usada (`docs/harness/progress.md`).
+- **Como rodar.** `uv sync --locked && uv run --locked python scripts/check_full.py`
+- **Limites.** Fixtures testam lógica de controle, nunca qualidade de modelo. A biblioteca não traz adaptador de provedor.
+- **Docs.** [Arquitetura](docs/architecture.md), [decisões](docs/decisions).
+<!-- case:end -->
+
 A versão `0.2.0` oferece controles locais para fluxos determinísticos de SupportOps: contratos de tools, execução resiliente, avaliações por código, segurança e utilitários de custo. Dados de exemplo e resultados fake são fixtures; não são medições de produção.
 
 ## Requisitos e configuração

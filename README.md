@@ -1,5 +1,16 @@
 # SupportOps AI Toolkit
 
+<!-- case:start -->
+## The case
+
+- **Problem.** A tool call needs a schema, a bound and a refusal path before a model can act on it.
+- **Decision.** Standard-library only: tool schemas, safe retries, step and time limits, code-first evals, an adversarial suite and cost helpers.
+- **Measured.** 82 unit tests plus fixture and adversarial checks in the locked fake gate. One live synthetic call: 141 input and 37 output tokens, one of four finite calls used (`docs/harness/progress.md`).
+- **Run it.** `uv sync --locked && uv run --locked python scripts/check_full.py`
+- **Limits.** Fixtures test control logic, never model quality. No provider adapter ships in the library.
+- **Docs.** [Architecture](docs/architecture.md), [decisions](docs/decisions).
+<!-- case:end -->
+
 Version `0.2.0` is a standard-library runtime toolkit for deterministic SupportOps workflows. It demonstrates contracts for tool schemas, resilient execution, code-first evaluation, safety controls, and local cost helpers. Sample data and fake eval results are fixtures, not production measurements.
 
 ## Problem
