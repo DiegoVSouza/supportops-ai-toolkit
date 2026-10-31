@@ -11,6 +11,25 @@
 - **Docs.** [Architecture](docs/architecture.md), [decisions](docs/decisions).
 <!-- case:end -->
 
+<!-- flow:start -->
+## How it works
+
+Generated from the same data as the diagram on the portfolio site (`projects/toolkit/`), so the two cannot drift.
+
+```mermaid
+flowchart LR
+  call["Tool call"]
+  screen["Guardrails"]
+  limits["Step and time limits"]
+  evals["Code-first evals"]
+  cost["Cost helpers"]
+  call --> screen
+  screen --> limits
+  limits --> evals
+  evals --> cost
+```
+<!-- flow:end -->
+
 Version `0.2.0` is a standard-library runtime toolkit for deterministic SupportOps workflows. It demonstrates contracts for tool schemas, resilient execution, code-first evaluation, safety controls, and local cost helpers. Sample data and fake eval results are fixtures, not production measurements.
 
 ## Problem
