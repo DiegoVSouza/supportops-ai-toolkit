@@ -14,8 +14,8 @@
     },
     {
       "id": "token-limit-in-agent-path",
-      "status": "PASS_ADAPTER_IN_P05_TESTED; FLY_DEPLOY_PENDING",
-      "evidence": "P02 itself owns no runtime; the caller reports usage. P05 phase 037 does it on the live path: artifacts/evidence/status-reconcile/p05-adapter-red.txt; p05-adapter-green.txt; p05-adapter-check-fast.txt"
+      "status": "PASS_ADAPTER_IN_P05_TESTED_AND_DEPLOYED",
+      "evidence": "P02 itself owns no runtime; the caller reports usage. P05 phase 037 does it on the live path: artifacts/evidence/status-reconcile/p05-adapter-red.txt; p05-adapter-green.txt; p05-adapter-check-fast.txt; deployed on Fly with one live run under the limit: p05 artifacts/evidence/status-reconcile/live-demo-runs-after-adapter.json"
     },
     {
       "id": "schema-validation-subset",
