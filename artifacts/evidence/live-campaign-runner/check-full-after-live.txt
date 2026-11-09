@@ -1,0 +1,16 @@
+command=LLM_MODE=fake uv run --locked python scripts/check_full.py (after the live runs)
+start=2026-11-09T12:52:01-03:00
+[eval] exit_code=0
+
+[adversarial] C:\estudo\Golpe\lab\projects\p02\.venv\Scripts\python.exe -m supportops_toolkit.adversarial
+{
+  "total": 35,
+  "blocked": 35,
+  "block_rate": 1.0,
+  "misses": []
+}
+[adversarial] exit_code=0
+
+check-full: PASS; failures=[]
+exit=0
+end=2026-11-09T12:52:05-03:00

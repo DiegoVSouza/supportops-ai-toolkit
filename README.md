@@ -5,9 +5,9 @@
 
 - **Problem.** A tool call needs a schema, a bound and a refusal path before a model can act on it.
 - **Decision.** Standard-library only: tool schemas, safe retries, step and time limits, code-first evals, an adversarial suite and cost helpers.
-- **Measured.** 82 unit tests plus fixture and adversarial checks in the locked fake gate. One live synthetic call: 141 input and 37 output tokens, one of four finite calls used (`docs/harness/progress.md`).
+- **Measured.** 82 unit tests plus fixture and adversarial checks in the locked fake gate. One live synthetic call: 141 input and 37 output tokens, one of four finite calls used (`docs/harness/progress.md`). A sealed development run on Groq `openai/gpt-oss-20b` (24 synthetic cases, one trial each, `artifacts/evals/live/p02-dev-v1/`): 13 of 24 passed (Wilson 95%: 35.1% to 72.1%); all 11 failures are the tool-selection check, while decision, escalation and abstention matched in 24 of 24. 8,441 input and 2,189 output tokens, estimated USD 0.0013 on free-plan keys; latency p50 590 ms, p95 1,147 ms.
 - **Run it.** `uv sync --locked && uv run --locked python scripts/check_full.py`
-- **Limits.** Fixtures test control logic, never model quality. No provider adapter ships in the library.
+- **Limits.** Fixtures test control logic, never model quality. No provider adapter ships in the library. The live number is a development split only: 3 cases per family, assistant-authored context and grader, human review pending, independent review waived by the owner, holdout (56 cases) not run.
 - **Docs.** [Architecture](docs/architecture.md), [decisions](docs/decisions).
 <!-- case:end -->
 
@@ -98,7 +98,7 @@ These lexical checks are defense-in-depth, not a guarantee against novel attacks
 
 `ExactCache` uses canonical JSON keys; `SemanticCache` uses token-set Jaccard similarity within an explicit namespace. The semantic cache is lexical and may return a poor match; use a high threshold and domain/version namespaces. `ModelRouter` chooses the configured cheap or strong model name from an explicit task profile; it makes no provider call. `TokenBudget` enforces a local counter, and `stream_text` forwards string chunks.
 
-`python cost/report.py` prints `PENDING` because no comparable recorded runs exist. Supply two recorded run dictionaries to `build_report` to calculate deltas. No fake savings, latency, or token figures are presented as real results.
+`python cost/report.py` prints `PENDING` because no two comparable recorded runs exist for the cache and router; the single sealed development run above reports tokens, estimated cost and latency of one configuration only, not a saving. Supply two recorded run dictionaries to `build_report` to calculate deltas. No fake savings, latency, or token figures are presented as real results.
 
 ## Testing
 
@@ -106,7 +106,7 @@ These lexical checks are defense-in-depth, not a guarantee against novel attacks
 - Offline eval gate: `LLM_MODE=fake python -m supportops_toolkit.evals.runner`.
 - Adversarial suite: `python -m supportops_toolkit.adversarial`.
 - Full deterministic CI gate: `python scripts/check_full.py`.
-- Live Groq evaluation is unavailable until this project has an accounted execution boundary and its source and identity prerequisites. Inspect the provider-free preparation with `uv run --locked python scripts/run_live_campaign.py --stage pilot --dry-run`. The historical direct Groq entry point is disabled.
+- Live Groq evaluation runs only through the root accounted boundary: `LLM_MODE=live python scripts/run_live_campaign.py --stage development --execute-free --max-trials N` after `--freeze`, guarded by the committed lab authorization for campaign `p02-dev-v1` (development split only). `--execute-fixture --output-dir <outside the repo>` exercises the same path without network. Inspect the provider-free preparation with `uv run --locked python scripts/run_live_campaign.py --stage pilot --dry-run`. The historical direct Groq entry point is disabled.
 - External integrations and E2E: `INCOMPLETE` (no connectors are part of this project).
 
 Evidence files under `artifacts/evidence/` record commands, exit codes, and output. See `.planning/phases/001-production-toolkit/` for the spec, plan, and verify checklist.

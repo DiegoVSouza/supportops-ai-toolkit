@@ -57,7 +57,7 @@ As heurísticas ajudam a reduzir risco, mas não garantem cobertura de ataques n
 
 `ExactCache` usa chave JSON canônica; `SemanticCache` compara conjuntos de palavras por Jaccard, dentro de um namespace. Esse cache pode considerar semelhantes textos com sentidos diferentes. `ModelRouter` escolhe apenas um nome de modelo a partir do perfil; não chama provedor. `TokenBudget` aplica um contador local e `stream_text` encaminha blocos de texto.
 
-`python cost/report.py` mostra `PENDING`, pois ainda não há execuções comparáveis registradas. Com dois registros reais, `build_report` calcula diferenças. Não apresentamos economias ou latências simuladas como medições verdadeiras.
+`python cost/report.py` mostra `PENDING`, pois ainda não há duas execuções comparáveis registradas para o cache e o roteador. Uma execução selada de desenvolvimento no Groq `openai/gpt-oss-20b` (24 casos sintéticos, um trial por caso, `artifacts/evals/live/p02-dev-v1/`) acertou 13 de 24 (Wilson 95%: 35,1% a 72,1%); as 11 falhas são todas a escolha da ferramenta, e decisão, escalonamento e abstenção bateram em 24 de 24. Foram 8.441 tokens de entrada e 2.189 de saída, custo estimado de USD 0,0013 em chaves do plano gratuito, latência p50 de 590 ms e p95 de 1.147 ms. É só o split de desenvolvimento (3 casos por família), com contexto e corretor escritos pelo assistente, revisão humana pendente, revisão independente dispensada pelo dono e holdout (56 casos) não executado. Com dois registros reais, `build_report` calcula diferenças. Não apresentamos economias ou latências simuladas como medições verdadeiras.
 
 ## Tipos de validação e evidência
 
@@ -65,6 +65,6 @@ As heurísticas ajudam a reduzir risco, mas não garantem cobertura de ataques n
 - Gate offline fake: `LLM_MODE=fake python -m supportops_toolkit.evals.runner`.
 - Suite adversarial: `python -m supportops_toolkit.adversarial`.
 - Gate completo determinístico: `python scripts/check_full.py`.
-- Integração externa, avaliação live e E2E: `INCOMPLETE`, pois não há conectores aprovados nem credenciais.
+- Avaliação live: só pelo limite contabilizado da raiz, campanha `p02-dev-v1` (split de desenvolvimento), com autorização do dono registrada no repositório do lab. Integração externa e E2E: `INCOMPLETE`, pois não há conectores aprovados.
 
 Os comandos, códigos de saída e resultados ficam em `artifacts/evidence/`. O escopo está em `.planning/phases/001-production-toolkit/`.
