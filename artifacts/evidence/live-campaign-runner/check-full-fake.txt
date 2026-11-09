@@ -1,0 +1,44 @@
+command=uv run --locked python scripts/check_full.py
+start=2026-11-09T10:19:56-03:00
+test_process_interruptions_propagate_without_tool_retry (test_tools.ToolContractTests.test_process_interruptions_propagate_without_tool_retry) ... ok
+test_registry_and_sample_tool_success (test_tools.ToolContractTests.test_registry_and_sample_tool_success) ... ok
+test_retrieved_instruction_is_data_and_screened_before_use (test_tools.ToolContractTests.test_retrieved_instruction_is_data_and_screened_before_use) ... ok
+test_retry_transient_but_fail_fatal (test_tools.ToolContractTests.test_retry_transient_but_fail_fatal) ... ok
+test_timeout_and_invalid_configuration (test_tools.ToolContractTests.test_timeout_and_invalid_configuration) ... ok
+test_unknown_invoice_and_output_validation (test_tools.ToolContractTests.test_unknown_invoice_and_output_validation) ... ok
+test_zero_overlap_search_returns_no_attributed_sources (test_tools.ToolContractTests.test_zero_overlap_search_returns_no_attributed_sources) ... ok
+
+----------------------------------------------------------------------
+Ran 108 tests in 4.985s
+
+OK
+{"status": "INCOMPLETE", "reason": "accounted_guard_required", "provider_accessed": false, "credentials_read": false}
+{"status": "INCOMPLETE", "reason": "accounted_guard_required", "provider_accessed": false, "credentials_read": false}
+[unit] exit_code=0
+
+[eval] C:\estudo\Golpe\lab\projects\p02\.venv\Scripts\python.exe -m supportops_toolkit.evals.runner
+{
+  "mode": "fake",
+  "total": 10,
+  "decision_accuracy": 1.0,
+  "tool_call_accuracy": 1.0,
+  "groundedness": 1.0,
+  "escalation_accuracy": 1.0,
+  "failures": [],
+  "regression": "PASS",
+  "quality_claim": "fixture-only; not a model measurement"
+}
+[eval] exit_code=0
+
+[adversarial] C:\estudo\Golpe\lab\projects\p02\.venv\Scripts\python.exe -m supportops_toolkit.adversarial
+{
+  "total": 35,
+  "blocked": 35,
+  "block_rate": 1.0,
+  "misses": []
+}
+[adversarial] exit_code=0
+
+check-full: PASS; failures=[]
+exit=0
+end=2026-11-09T10:20:03-03:00

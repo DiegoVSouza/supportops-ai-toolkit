@@ -19,3 +19,7 @@ Prepare an 80-case synthetic Core toolkit campaign with a fixed 24/56 developmen
 ## 2026-10-26 — Bounded campaign ledger
 
 Phase 009 adds P02-local reservation accounting, process exclusion, and read-only resume inspection. It does not change the USD 0 profile or authorize free-tier campaign calls. Reviewer sign-off, quota evidence, finite cumulative limits, confirmation funding, pacing and model preflight remain `PENDING`; generation stays disabled. No provider request was made.
+
+## 2026-11-09 — Sealed development campaign p02-dev-v1
+
+Owner reply of 2026-11-09 ("pode usar os modelos da groq tem as env ai documentada", "faz a 1 mesmo") authorizes free Groq model runs; the root guard admits only campaign `p02-dev-v1` (24 attempts, development split, one trial per case, one call per trial) through the committed `AUTHORIZATION.json` of lab phase 058. P02 builds its own sealed executor (`scripts/campaign_execution.py`): deterministic context for the two families whose text points to artefacts the dataset does not carry, a code-first grader, content-free per-trial observations and a report with tokens, cost, latency percentiles, refusal, injection and grounding measures. The 56 holdout cases and the confirmation reserve stay closed. Corpus context and grader are assistant-authored; human review is PENDING and independent review is WAIVED_BY_OWNER (owner approval, not independent verification). Paid spend stays USD 0.
