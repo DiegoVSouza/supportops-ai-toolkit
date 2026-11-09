@@ -7,7 +7,7 @@
 - **Decision.** Standard-library only: tool schemas, safe retries, step and time limits, code-first evals, an adversarial suite and cost helpers.
 - **Measured.** 82 unit tests plus fixture and adversarial checks in the locked fake gate. One live synthetic call: 141 input and 37 output tokens, one of four finite calls used (`docs/harness/progress.md`). A sealed development run on Groq `openai/gpt-oss-20b` (24 synthetic cases, one trial each, `artifacts/evals/live/p02-dev-v1/`): 13 of 24 passed (Wilson 95%: 35.1% to 72.1%); all 11 failures are the tool-selection check, while decision, escalation and abstention matched in 24 of 24. 8,441 input and 2,189 output tokens, estimated USD 0.0013 on free-plan keys; latency p50 590 ms, p95 1,147 ms.
 - **Run it.** `uv sync --locked && uv run --locked python scripts/check_full.py`
-- **Limits.** Fixtures test control logic, never model quality. No provider adapter ships in the library. The live number is a development split only: 3 cases per family, assistant-authored context and grader, human review pending, independent review waived by the owner, holdout (56 cases) not run.
+- **Limits.** Fixtures test control logic, never model quality. No provider adapter ships in the library. The live number is a development split only: 3 cases per family, assistant-authored context and grader, human review done by the owner on 2026-11-09, independent review waived by the owner, holdout (56 cases) not run.
 - **Docs.** [Architecture](docs/architecture.md), [decisions](docs/decisions).
 <!-- case:end -->
 
