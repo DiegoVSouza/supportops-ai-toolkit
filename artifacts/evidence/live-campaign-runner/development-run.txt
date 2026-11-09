@@ -1,0 +1,5 @@
+command=LLM_MODE=live python scripts/run_live_campaign.py --stage development --execute-free --max-trials 18
+start=2026-11-09T10:27:21-03:00
+{"status": "COMPLETE", "ran": 18, "remaining": 0, "provenance": "live", "passed": 13, "trials": 24}
+exit=0
+end=2026-11-09T10:49:00-03:00
