@@ -1,0 +1,4 @@
+command=C:\estudo\Golpe\lab\projects\p02\.venv\Scripts\python.exe scripts/check_fast.py
+working_directory=projects/p02
+exit_code=0
+check-fast: OK

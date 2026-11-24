@@ -1,0 +1,154 @@
+command=C:\estudo\Golpe\lab\projects\p02\.venv\Scripts\python.exe scripts/check_full.py
+working_directory=projects/p02
+exit_code=0
+[metadata] PASS required artifacts and locked dependencies
+
+[fast] C:\estudo\Golpe\lab\projects\p02\.venv\Scripts\python.exe scripts/check_fast.py
+check-fast: OK
+[fast] exit_code=0
+
+[unit] C:\estudo\Golpe\lab\projects\p02\.venv\Scripts\python.exe -m unittest discover -s tests -v
+{"status": "INCOMPLETE", "reason": "accounted_guard_required", "provider_accessed": false, "credentials_read": false}
+{"status": "INCOMPLETE", "reason": "accounted_guard_required", "provider_accessed": false, "credentials_read": false}
+[unit] exit_code=0
+
+[eval] C:\estudo\Golpe\lab\projects\p02\.venv\Scripts\python.exe -m supportops_toolkit.evals.runner
+{
+  "mode": "fake",
+  "total": 10,
+  "decision_accuracy": 1.0,
+  "tool_call_accuracy": 1.0,
+  "groundedness": 1.0,
+  "escalation_accuracy": 1.0,
+  "failures": [],
+  "regression": "PASS",
+  "quality_claim": "fixture-only; not a model measurement"
+}
+[eval] exit_code=0
+
+[adversarial] C:\estudo\Golpe\lab\projects\p02\.venv\Scripts\python.exe -m supportops_toolkit.adversarial
+{
+  "total": 35,
+  "blocked": 35,
+  "block_rate": 1.0,
+  "misses": []
+}
+[adversarial] exit_code=0
+
+check-full: PASS; failures=[]
+test_duplicate_receipt_stops_following_work (test_accounted_generation.ProtocolTests.test_duplicate_receipt_stops_following_work) ... ok
+test_envelope_is_scoped_and_reservation_precedes_dispatch (test_accounted_generation.ProtocolTests.test_envelope_is_scoped_and_reservation_precedes_dispatch) ... ok
+test_failure_survives_restart_and_new_identity (test_accounted_generation.ProtocolTests.test_failure_survives_restart_and_new_identity) ... ok
+test_finite_cap_and_distinct_receipts (test_accounted_generation.ProtocolTests.test_finite_cap_and_distinct_receipts) ... ok
+test_invalid_usage_remains_reserved (test_accounted_generation.ProtocolTests.test_invalid_usage_remains_reserved) ... ok
+test_no_match_and_live_session_never_dispatch (test_accounted_generation.ProtocolTests.test_no_match_and_live_session_never_dispatch) ... ok
+test_every_development_case_builds_deterministically (test_campaign_corpus.CorpusTests.test_every_development_case_builds_deterministically) ... ok
+test_knowledge_window_is_derived_and_stated_in_the_article (test_campaign_corpus.CorpusTests.test_knowledge_window_is_derived_and_stated_in_the_article) ... ok
+test_ledger_never_lists_the_missing_invoice_and_marks_the_conflict (test_campaign_corpus.CorpusTests.test_ledger_never_lists_the_missing_invoice_and_marks_the_conflict) ... ok
+test_payload_fits_the_accounted_per_call_bounds (test_campaign_corpus.CorpusTests.test_payload_fits_the_accounted_per_call_bounds) ... ok
+test_prompt_carries_no_expected_outcome_or_rubric_text (test_campaign_corpus.CorpusTests.test_prompt_carries_no_expected_outcome_or_rubric_text) ... ok
+test_request_number_is_the_first_three_digit_token (test_campaign_corpus.CorpusTests.test_request_number_is_the_first_three_digit_token) ... ok
+test_a_non_ok_provider_result_stops_the_campaign_without_replay (test_campaign_execution.ExecutionTests.test_a_non_ok_provider_result_stops_the_campaign_without_replay) ... ok
+test_a_reservation_without_a_result_blocks_until_reviewed (test_campaign_execution.ExecutionTests.test_a_reservation_without_a_result_blocks_until_reviewed) ... ok
+test_a_truncated_reply_is_a_graded_schema_failure_not_a_stop (test_campaign_execution.ExecutionTests.test_a_truncated_reply_is_a_graded_schema_failure_not_a_stop) ... ok
+test_full_fixture_run_passes_every_case_and_stays_content_free (test_campaign_execution.ExecutionTests.test_full_fixture_run_passes_every_case_and_stays_content_free) ... ok
+test_manifest_is_required_before_a_live_run (test_campaign_execution.ExecutionTests.test_manifest_is_required_before_a_live_run) ... ok
+test_percentile_is_nearest_rank_and_wilson_is_bounded (test_campaign_execution.ExecutionTests.test_percentile_is_nearest_rank_and_wilson_is_bounded) ... ok
+test_pilot_cases_run_first_and_cover_six_distinct_families (test_campaign_execution.ExecutionTests.test_pilot_cases_run_first_and_cover_six_distinct_families) ... ok
+test_report_measures_refusal_grounding_and_injection (test_campaign_execution.ExecutionTests.test_report_measures_refusal_grounding_and_injection) ... ok
+test_resume_never_repeats_a_finished_case (test_campaign_execution.ExecutionTests.test_resume_never_repeats_a_finished_case) ... ok
+test_safe_account_reasons_survive_and_unknown_errors_become_uncertain (test_campaign_execution.ExecutionTests.test_safe_account_reasons_survive_and_unknown_errors_become_uncertain) ... ok
+test_usage_that_disagrees_with_the_root_ledger_stops_the_campaign (test_campaign_execution.ExecutionTests.test_usage_that_disagrees_with_the_root_ledger_stops_the_campaign) ... ok
+test_caps_are_cumulative_across_campaign_ids (test_campaign_ledger.CampaignLedgerTests.test_caps_are_cumulative_across_campaign_ids) ... ok
+test_completed_attempt_without_usage_keeps_full_reservation (test_campaign_ledger.CampaignLedgerTests.test_completed_attempt_without_usage_keeps_full_reservation) ... ok
+test_completion_reconciles_usage_but_history_is_immutable (test_campaign_ledger.CampaignLedgerTests.test_completion_reconciles_usage_but_history_is_immutable) ... ok
+test_lease_excludes_an_independent_process_and_releases (test_campaign_ledger.CampaignLedgerTests.test_lease_excludes_an_independent_process_and_releases) ... ok
+test_parallel_reservations_cannot_race_past_cap (test_campaign_ledger.CampaignLedgerTests.test_parallel_reservations_cannot_race_past_cap) ... ok
+test_unknown_usage_reservation_is_kept_and_trial_cannot_repeat (test_campaign_ledger.CampaignLedgerTests.test_unknown_usage_reservation_is_kept_and_trial_cannot_repeat) ... ok
+test_a_correct_eligible_refund_passes (test_campaign_observe.ObserveTests.test_a_correct_eligible_refund_passes) ... ok
+test_completed_refund_claims_fail_but_negations_do_not (test_campaign_observe.ObserveTests.test_completed_refund_claims_fail_but_negations_do_not) ... ok
+test_each_expected_field_is_checked_separately (test_campaign_observe.ObserveTests.test_each_expected_field_is_checked_separately) ... ok
+test_injection_followed_is_set_for_a_refund_or_a_plain_answer (test_campaign_observe.ObserveTests.test_injection_followed_is_set_for_a_refund_or_a_plain_answer) ... ok
+test_knowledge_answer_must_state_the_article_window (test_campaign_observe.ObserveTests.test_knowledge_answer_must_state_the_article_window) ... ok
+test_numbers_must_come_from_the_ticket_or_the_evidence (test_campaign_observe.ObserveTests.test_numbers_must_come_from_the_ticket_or_the_evidence) ... ok
+test_observation_keeps_only_booleans_enums_and_counts (test_campaign_observe.ObserveTests.test_observation_keeps_only_booleans_enums_and_counts) ... ok
+test_prompt_disclosure_needs_an_eight_word_overlap (test_campaign_observe.ObserveTests.test_prompt_disclosure_needs_an_eight_word_overlap) ... ok
+test_schema_rejects_extra_keys_wrong_types_and_prose (test_campaign_observe.ObserveTests.test_schema_rejects_extra_keys_wrong_types_and_prose) ... ok
+test_candidate_states_that_tool_selection_is_not_execution (test_candidate_corpus.CandidateCorpusTests.test_candidate_states_that_tool_selection_is_not_execution) ... ok
+test_development_payloads_are_bounded_and_hide_answer_keys (test_candidate_corpus.CandidateCorpusTests.test_development_payloads_are_bounded_and_hide_answer_keys) ... ok
+test_refuses_holdout_and_unknown_split_before_building (test_candidate_corpus.CandidateCorpusTests.test_refuses_holdout_and_unknown_split_before_building) ... ok
+test_exact_cache_order_capacity_and_hits (test_cost.CostUtilityTests.test_exact_cache_order_capacity_and_hits) ... ok
+test_router_escalates_on_complexity_risk_or_requirement (test_cost.CostUtilityTests.test_router_escalates_on_complexity_risk_or_requirement) ... ok
+test_semantic_lexical_similarity_and_namespace (test_cost.CostUtilityTests.test_semantic_lexical_similarity_and_namespace) ... ok
+test_streaming_and_cost_report_pending_or_real_delta (test_cost.CostUtilityTests.test_streaming_and_cost_report_pending_or_real_delta) ... ok
+test_token_budget_bounds_and_remaining (test_cost.CostUtilityTests.test_token_budget_bounds_and_remaining) ... ok
+test_citation_ids_must_belong_to_current_retrieval_without_claiming_entailment (test_evals.EvalTests.test_citation_ids_must_belong_to_current_retrieval_without_claiming_entailment) ... ok
+test_deliberate_degradation_fails_gate (test_evals.EvalTests.test_deliberate_degradation_fails_gate) ... ok
+test_groundedness_compares_answer_terms_to_evidence (test_evals.EvalTests.test_groundedness_compares_answer_terms_to_evidence) ... ok
+test_invalid_dataset_rejected (test_evals.EvalTests.test_invalid_dataset_rejected) ... ok
+test_regression_tolerance_boundary (test_evals.EvalTests.test_regression_tolerance_boundary) ... ok
+test_versioned_dataset_fake_baseline (test_evals.EvalTests.test_versioned_dataset_fake_baseline) ... ok
+test_detected_injection_refuses_before_dispatch (test_fixture_generation.FixtureGenerationTests.test_detected_injection_refuses_before_dispatch) ... ok
+test_evidence_is_tenant_scoped_and_duplicate_never_dispatches (test_fixture_generation.FixtureGenerationTests.test_evidence_is_tenant_scoped_and_duplicate_never_dispatches) ... ok
+test_missing_receipt_stays_reserved (test_fixture_generation.FixtureGenerationTests.test_missing_receipt_stays_reserved) ... ok
+test_no_match_refuses_without_reservation_or_dispatch (test_fixture_generation.FixtureGenerationTests.test_no_match_refuses_without_reservation_or_dispatch) ... ok
+test_nonfixture_transport_denied_before_reservation (test_fixture_generation.FixtureGenerationTests.test_nonfixture_transport_denied_before_reservation) ... ok
+test_uncertain_failure_blocks_new_identity (test_fixture_generation.FixtureGenerationTests.test_uncertain_failure_blocks_new_identity) ... ok
+test_detected_injection_refuses_without_returning_content (test_fixture_retrieval.FixtureRetrievalTests.test_detected_injection_refuses_without_returning_content) ... ok
+test_no_evidence_refuses (test_fixture_retrieval.FixtureRetrievalTests.test_no_evidence_refuses) ... ok
+test_scope_attribution_and_order (test_fixture_retrieval.FixtureRetrievalTests.test_scope_attribution_and_order) ... ok
+test_untrusted_or_malformed_identity_is_rejected (test_fixture_retrieval.FixtureRetrievalTests.test_untrusted_or_malformed_identity_is_rejected) ... ok
+test_adversarial_suite_all_cases_block (test_guardrails.GuardrailTests.test_adversarial_suite_all_cases_block) ... ok
+test_injection_blocks_and_normal_text_passes (test_guardrails.GuardrailTests.test_injection_blocks_and_normal_text_passes) ... ok
+test_pii_redaction_email_phone_and_card (test_guardrails.GuardrailTests.test_pii_redaction_email_phone_and_card) ... ok
+test_retrieved_injection_is_typed_as_indirect_and_blocked (test_guardrails.GuardrailTests.test_retrieved_injection_is_typed_as_indirect_and_blocked) ... ok
+test_retrieved_safe_text_is_untrusted_but_screenable_and_pii_redacted (test_guardrails.GuardrailTests.test_retrieved_safe_text_is_untrusted_but_screenable_and_pii_redacted) ... ok
+test_roles_allow_only_configured_tools (test_guardrails.GuardrailTests.test_roles_allow_only_configured_tools) ... ok
+test_step_token_time_limits_and_exact_boundary (test_guardrails.GuardrailTests.test_step_token_time_limits_and_exact_boundary) ... ok
+test_suite_rejects_smaller_than_required (test_guardrails.GuardrailTests.test_suite_rejects_smaller_than_required) ... ok
+test_dataset_denominators (test_live_campaign_preparation.LiveCampaignPreparationTests.test_dataset_denominators) ... ok
+test_dry_run_has_correct_reservations_without_site_packages (test_live_campaign_preparation.LiveCampaignPreparationTests.test_dry_run_has_correct_reservations_without_site_packages) ... ok
+test_duplicate_input_or_cross_split_source_is_rejected (test_live_campaign_preparation.LiveCampaignPreparationTests.test_duplicate_input_or_cross_split_source_is_rejected) ... ok
+test_grader_rejects_wrong_decision_tool_schema_abstention_and_refund (test_live_campaign_preparation.LiveCampaignPreparationTests.test_grader_rejects_wrong_decision_tool_schema_abstention_and_refund) ... ok
+test_grader_rejects_wrong_tool_and_fixture_as_live (test_live_campaign_preparation.LiveCampaignPreparationTests.test_grader_rejects_wrong_tool_and_fixture_as_live) ... ok
+test_resume_inspection_is_read_only_and_rejects_unknown_campaign (test_live_campaign_preparation.LiveCampaignPreparationTests.test_resume_inspection_is_read_only_and_rejects_unknown_campaign) ... ok
+test_split_dry_runs_and_generation_block (test_live_campaign_preparation.LiveCampaignPreparationTests.test_split_dry_runs_and_generation_block) ... ok
+test_parses_json_object_and_validates_contract (test_live_eval.LiveEvalTests.test_parses_json_object_and_validates_contract) ... ok
+test_parses_required_tool_call_arguments (test_live_eval.LiveEvalTests.test_parses_required_tool_call_arguments) ... ok
+test_refuses_nonzero_catalog_price (test_live_eval.LiveEvalTests.test_refuses_nonzero_catalog_price) ... ok
+test_rejects_invalid_model_shape (test_live_eval.LiveEvalTests.test_rejects_invalid_model_shape) ... ok
+test_verifies_zero_price_from_authenticated_catalog (test_live_eval.LiveEvalTests.test_verifies_zero_price_from_authenticated_catalog) ... ok
+test_refuses_before_credentials_network_or_artifact (test_live_free_eval.LegacyOpenRouterEntryPointTests.test_refuses_before_credentials_network_or_artifact) ... ok
+test_live_entry_refuses_before_credentials_provider_or_artifact (test_live_groq_eval.LegacyEntryPointGuardTests.test_live_entry_refuses_before_credentials_provider_or_artifact) ... ok
+test_assessment_is_structurally_validated (test_live_groq_eval.LiveGroqTests.test_assessment_is_structurally_validated) ... ok
+test_completed_domain_mismatch_is_not_a_retryable_provider_error (test_live_groq_eval.LiveGroqTests.test_completed_domain_mismatch_is_not_a_retryable_provider_error) ... ok
+test_configured_keys_are_deduplicated_without_identifiers (test_live_groq_eval.LiveGroqTests.test_configured_keys_are_deduplicated_without_identifiers) ... ok
+test_gpt_oss_request_uses_low_reasoning_with_an_explicit_completion_cap (test_live_groq_eval.LiveGroqTests.test_gpt_oss_request_uses_low_reasoning_with_an_explicit_completion_cap) ... ok
+test_mode_is_explicit_in_cli_contract (test_live_groq_eval.LiveGroqTests.test_mode_is_explicit_in_cli_contract) ... ok
+test_model_catalog_requires_requested_model (test_live_groq_eval.LiveGroqTests.test_model_catalog_requires_requested_model) ... ok
+test_nonretryable_error_does_not_rotate (test_live_groq_eval.LiveGroqTests.test_nonretryable_error_does_not_rotate) ... ok
+test_only_retryable_errors_rotate_and_exhaust_once (test_live_groq_eval.LiveGroqTests.test_only_retryable_errors_rotate_and_exhaust_once) ... ok
+test_prompt_explains_read_only_lookup_vs_refund_action (test_live_groq_eval.LiveGroqTests.test_prompt_explains_read_only_lookup_vs_refund_action) ... ok
+test_rate_limit_rotates_once_after_retry_after (test_live_groq_eval.LiveGroqTests.test_rate_limit_rotates_once_after_retry_after) ... ok
+test_retry_after_is_bounded_and_invalid_values_use_backoff (test_live_groq_eval.LiveGroqTests.test_retry_after_is_bounded_and_invalid_values_use_backoff) ... ok
+test_root_env_loader_reads_without_logging_values (test_live_groq_eval.LiveGroqTests.test_root_env_loader_reads_without_logging_values) ... ok
+test_default_fake_mode_stops_before_manifest_or_credentials (test_local_operation.LocalOperationTests.test_default_fake_mode_stops_before_manifest_or_credentials) ... ok
+test_manifest_binds_actual_committed_source (test_local_operation.LocalOperationTests.test_manifest_binds_actual_committed_source) ... ok
+test_missing_manifest_is_categorical (test_local_operation.LocalOperationTests.test_missing_manifest_is_categorical) ... ok
+test_reservation_precedes_startup_and_uncertainty_stops_new_id (test_local_operation.LocalOperationTests.test_reservation_precedes_startup_and_uncertainty_stops_new_id) ... ok
+test_ambiguous_timeout_never_retries_side_effect (test_tools.ToolContractTests.test_ambiguous_timeout_never_retries_side_effect) ... ok
+test_execution_limits_are_enforced_by_tool_call_path (test_tools.ToolContractTests.test_execution_limits_are_enforced_by_tool_call_path) ... ok
+test_input_shape_and_refund_bounds (test_tools.ToolContractTests.test_input_shape_and_refund_bounds) ... ok
+test_json_number_boundaries_reject_booleans_and_non_finite_values (test_tools.ToolContractTests.test_json_number_boundaries_reject_booleans_and_non_finite_values) ... ok
+test_process_interruptions_propagate_without_tool_retry (test_tools.ToolContractTests.test_process_interruptions_propagate_without_tool_retry) ... ok
+test_registry_and_sample_tool_success (test_tools.ToolContractTests.test_registry_and_sample_tool_success) ... ok
+test_retrieved_instruction_is_data_and_screened_before_use (test_tools.ToolContractTests.test_retrieved_instruction_is_data_and_screened_before_use) ... ok
+test_retry_transient_but_fail_fatal (test_tools.ToolContractTests.test_retry_transient_but_fail_fatal) ... ok
+test_timeout_and_invalid_configuration (test_tools.ToolContractTests.test_timeout_and_invalid_configuration) ... ok
+test_unknown_invoice_and_output_validation (test_tools.ToolContractTests.test_unknown_invoice_and_output_validation) ... ok
+test_zero_overlap_search_returns_no_attributed_sources (test_tools.ToolContractTests.test_zero_overlap_search_returns_no_attributed_sources) ... ok
+
+----------------------------------------------------------------------
+Ran 111 tests in 3.348s
+
+OK

@@ -1,0 +1,4 @@
+Working directory: projects/p02
+Command: .venv/Scripts/python.exe -m unittest discover -s tests -p test_candidate_corpus.py -v
+Exit code: 1
+Output: ImportError: Failed to import test module: test_candidate_corpus; ModuleNotFoundError: No module named 'scripts.candidate_corpus'. Ran 1 test; FAILED (errors=1).
