@@ -27,3 +27,5 @@ Owner reply of 2026-11-09 ("pode usar os modelos da groq tem as env ai documenta
 ## 2026-11-23 — Tool-selection candidate
 
 Phase 018 prepares a separate prompt candidate from the recorded development failures. The spent campaign and its prompt stay unchanged; model quality and external RAG remain pending. Candidate tests do not authorize a provider call or any tool effect.
+
+Phase 019 prepares a separate development campaign and binds the candidate prompt to its fingerprint. The original development ceiling and prior usage remain cumulative; holdout and confirmation remain protected. Live dispatch stays closed until root guard, accounting and authorization are verified.
