@@ -23,3 +23,7 @@ Phase 009 adds P02-local reservation accounting, process exclusion, and read-onl
 ## 2026-11-09 — Sealed development campaign p02-dev-v1
 
 Owner reply of 2026-11-09 ("pode usar os modelos da groq tem as env ai documentada", "faz a 1 mesmo") authorizes free Groq model runs; the root guard admits only campaign `p02-dev-v1` (24 attempts, development split, one trial per case, one call per trial) through the committed `AUTHORIZATION.json` of lab phase 058. P02 builds its own sealed executor (`scripts/campaign_execution.py`): deterministic context for the two families whose text points to artefacts the dataset does not carry, a code-first grader, content-free per-trial observations and a report with tokens, cost, latency percentiles, refusal, injection and grounding measures. The 56 holdout cases and the confirmation reserve stay closed. Corpus context and grader are assistant-authored; human review is PENDING and independent review is WAIVED_BY_OWNER (owner approval, not independent verification). Paid spend stays USD 0.
+
+## 2026-11-23 — Tool-selection candidate
+
+Phase 018 prepares a separate prompt candidate from the recorded development failures. The spent campaign and its prompt stay unchanged; model quality and external RAG remain pending. Candidate tests do not authorize a provider call or any tool effect.
