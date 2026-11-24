@@ -185,12 +185,15 @@ def execute_development(args: argparse.Namespace) -> int:
 
     lab = ROOT.parents[1]
     try:
+        ex.use_campaign(args.campaign)
+        if args.campaign == "p02-dev-v2" and not args.execute_fixture:
+            raise ex.ExecutionBlocked("candidate_campaign_not_enabled")
         if args.stage != "development":
             raise ex.ExecutionBlocked("development_stage_only")
         config = read_json(ROOT / "evals/live-campaign.json")
         cases_path = ROOT / config["cases_path"]
         cases = read_cases(cases_path, read_json(ROOT / config["dataset_manifest"]))
-        live_dir = ROOT / "artifacts/evals/live/p02-dev-v1"
+        live_dir = ROOT / "artifacts/evals/live" / args.campaign
         if args.freeze:
             manifest = ex.freeze(ROOT, lab, live_dir, cases_path, cases)
             print(json.dumps({"status": "FROZEN", "candidate": manifest["candidate"], "fingerprint": manifest["fingerprint"]}))
@@ -235,6 +238,7 @@ def execute_development(args: argparse.Namespace) -> int:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--config", type=Path, default=ROOT / "evals/live-campaign.json")
+    parser.add_argument("--campaign", choices=("p02-dev-v1", "p02-dev-v2"), default="p02-dev-v1")
     command = parser.add_mutually_exclusive_group(required=True)
     command.add_argument("--stage", choices=("pilot", "development", "holdout"))
     command.add_argument("--resume", metavar="CAMPAIGN_ID")

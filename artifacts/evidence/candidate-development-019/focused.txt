@@ -1,0 +1,12 @@
+command=C:\estudo\Golpe\lab\projects\p02\.venv\Scripts\python.exe -m unittest discover -s tests -p test_campaign_candidate.py -v
+working_directory=projects/p02
+exit_code=0
+test_candidate_freeze_and_live_execution_are_closed (test_campaign_candidate.CampaignCandidateTests.test_candidate_freeze_and_live_execution_are_closed) ... ok
+test_candidate_prompt_is_part_of_frozen_source_set (test_campaign_candidate.CampaignCandidateTests.test_candidate_prompt_is_part_of_frozen_source_set) ... ok
+test_new_campaign_uses_candidate_and_old_campaign_keeps_original_prompt (test_campaign_candidate.CampaignCandidateTests.test_new_campaign_uses_candidate_and_old_campaign_keeps_original_prompt) ... ok
+test_unknown_campaign_is_rejected (test_campaign_candidate.CampaignCandidateTests.test_unknown_campaign_is_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.292s
+
+OK

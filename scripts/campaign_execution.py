@@ -48,6 +48,14 @@ CAPACITY_WAITS = {
 SAFE_REASON = re.compile(r"[a-z_]{1,64}")
 
 
+def use_campaign(campaign: str) -> None:
+    """Select an explicitly known development campaign; never enable it at the account boundary."""
+    if campaign not in {"p02-dev-v1", "p02-dev-v2"}:
+        raise ValueError("unknown development campaign")
+    global CAMPAIGN
+    CAMPAIGN = campaign
+
+
 def cost_of(input_tokens: int, output_tokens: int) -> Decimal:
     return (Decimal(input_tokens) * PRICE_IN + Decimal(output_tokens) * PRICE_OUT) / 1000000
 
@@ -104,7 +112,7 @@ def source_paths(project: Path) -> list[str]:
     return sorted(
         path
         for path in git(project, "ls-files").splitlines()
-        if path.startswith(("supportops_toolkit/", "scripts/", "tests/", "evals/", "guardrails/", "cost/"))
+        if path.startswith(("supportops_toolkit/", "scripts/", "tests/", "evals/", "guardrails/", "cost/", "agent/"))
         or path in {"pyproject.toml", "uv.lock", "harness.yaml"}
     )
 
@@ -286,9 +294,15 @@ def safe_reason(error: Exception) -> str:
 
 
 def call_provider(case: dict[str, Any], built: BuiltCase, session: Any) -> dict[str, Any]:
+    if CAMPAIGN == "p02-dev-v2":
+        from scripts.candidate_corpus import build_candidate_payload
+
+        payload = build_candidate_payload(case, MODEL)
+    else:
+        payload = build_payload(built, MODEL)
     envelope = {
         "campaign_id": CAMPAIGN, "case_id": case["id"], "trial": 1, "call_index": 1,
-        "timeout_seconds": 20, "payload": build_payload(built, MODEL),
+        "timeout_seconds": 20, "payload": payload,
     }
     try:
         session.preview(envelope)

@@ -1,0 +1,4 @@
+command=C:\estudo\Golpe\lab\projects\p02\.venv\Scripts\python.exe scripts/run_live_campaign.py --stage development --campaign p02-dev-v2 --execute-fixture --max-trials 24 --output-dir C:\Users\dvsdi\AppData\Local\Temp\p02-candidate-fixture-j_ex2e73\campaign
+working_directory=projects/p02
+exit_code=0
+{"status": "COMPLETE", "ran": 24, "remaining": 0, "provenance": "fixture", "passed": 24, "trials": 24}
