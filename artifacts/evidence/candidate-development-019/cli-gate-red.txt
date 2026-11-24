@@ -1,0 +1,4 @@
+Working directory: projects/p02
+Command: .venv/Scripts/python.exe -m unittest discover -s tests -p test_campaign_candidate.py -v
+Exit code: 1
+Output: Ran 8 tests; FAILED (errors=2). The CLI account-verification function did not exist.

@@ -125,12 +125,51 @@ ROOT_FILES = (
 )
 
 
+def root_files() -> tuple[str, ...]:
+    if CAMPAIGN == "p02-dev-v2":
+        return ROOT_FILES[:-1] + (".planning/llm-live-readiness/phases/064-p02-candidate-development/AUTHORIZATION.json",)
+    return ROOT_FILES
+
+
+def candidate_preflight(account: Any, *, freezing: bool) -> dict[str, int]:
+    """Check committed authority and cumulative history without contacting the provider."""
+    if account._p02_campaigns().get("p02-dev-v2") != 24:
+        raise ExecutionBlocked("candidate_authorization_missing")
+    rows = account._history()
+    if any(row["event"] == "reserved" for row in rows):
+        raise ExecutionBlocked("uncertain_attempt_requires_reconciliation")
+    dev = [row for row in rows if row["project"] == "p02" and row["campaign"].startswith("p02-dev-")]
+    current = [row for row in dev if row["campaign"] == "p02-dev-v2"]
+    if freezing and current:
+        raise ExecutionBlocked("candidate_already_started")
+    if any(row["event"] == "completed" and row["status"] != "ok" for row in current):
+        raise ExecutionBlocked("candidate_stopped_requires_review")
+    if len(dev) + (24 if freezing else 0) > 72:
+        raise ExecutionBlocked("development_capacity_insufficient")
+    return {"development_used": len(dev), "candidate_used": len(current)}
+
+
+def verify_candidate_authority(lab: Path, *, freezing: bool) -> dict[str, int]:
+    """Read the root guard under its account lock; never load credentials or dispatch."""
+    sys.path.insert(0, str(lab / "scripts/harness"))
+    from live_free_account import AccountBlocked, SharedAccount, machine_lease
+
+    try:
+        policy = json.loads((lab / "shared/policies/groq-free-campaign.json").read_text(encoding="utf-8"))
+        account = SharedAccount(lab, policy)
+        with machine_lease(account.lock):
+            return candidate_preflight(account, freezing=freezing)
+    except AccountBlocked as error:
+        raise ExecutionBlocked(safe_reason(error)) from None
+
+
 def fingerprint(project: Path, lab: Path) -> str:
     paths = source_paths(project)
+    selected_root_files = root_files()
     git(project, "diff", "--quiet", "HEAD", "--", *paths)
-    git(lab, "diff", "--quiet", "HEAD", "--", *ROOT_FILES)
+    git(lab, "diff", "--quiet", "HEAD", "--", *selected_root_files)
     values = [("p02/" + p, hashlib.sha256((project / p).read_bytes()).hexdigest()) for p in paths]
-    values += [(p, hashlib.sha256((lab / p).read_bytes()).hexdigest()) for p in ROOT_FILES]
+    values += [(p, hashlib.sha256((lab / p).read_bytes()).hexdigest()) for p in selected_root_files]
     return hashlib.sha256(json.dumps(values, separators=(",", ":")).encode()).hexdigest()
 
 
@@ -144,6 +183,10 @@ def ordered_cases(cases: list[dict[str, Any]]) -> list[dict[str, Any]]:
 
 
 def freeze(project: Path, lab: Path, out_dir: Path, cases_path: Path, cases: list[dict[str, Any]]) -> dict[str, Any]:
+    if CAMPAIGN == "p02-dev-v2" and (out_dir / "manifest.json").exists():
+        raise ExecutionBlocked("manifest_already_exists")
+    if CAMPAIGN == "p02-dev-v2" and any((out_dir / name).exists() for name in ("ledger.sqlite", "trials.jsonl", "stop.json")):
+        raise ExecutionBlocked("candidate_already_started")
     manifest = {
         "campaign": CAMPAIGN,
         "candidate": git(project, "rev-parse", "HEAD"),
@@ -156,7 +199,14 @@ def freeze(project: Path, lab: Path, out_dir: Path, cases_path: Path, cases: lis
         "split": "development",
     }
     out_dir.mkdir(parents=True, exist_ok=True)
-    (out_dir / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8", newline="\n")
+    if CAMPAIGN == "p02-dev-v2":
+        try:
+            with (out_dir / "manifest.json").open("x", encoding="utf-8", newline="\n") as stream:
+                stream.write(json.dumps(manifest, indent=2) + "\n")
+        except FileExistsError:
+            raise ExecutionBlocked("manifest_already_exists") from None
+    else:
+        (out_dir / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8", newline="\n")
     return manifest
 
 

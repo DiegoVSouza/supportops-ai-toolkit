@@ -1,0 +1,16 @@
+command=C:\estudo\Golpe\lab\projects\p02\.venv\Scripts\python.exe -m unittest discover -s tests -p test_campaign_candidate.py -v
+working_directory=projects/p02
+exit_code=0
+test_candidate_fingerprint_binds_its_own_root_authorization (test_campaign_candidate.CampaignCandidateTests.test_candidate_fingerprint_binds_its_own_root_authorization) ... ok
+test_candidate_prompt_is_part_of_frozen_source_set (test_campaign_candidate.CampaignCandidateTests.test_candidate_prompt_is_part_of_frozen_source_set) ... ok
+test_cli_checks_account_before_freeze_or_live (test_campaign_candidate.CampaignCandidateTests.test_cli_checks_account_before_freeze_or_live) ... ok
+test_existing_candidate_manifest_is_never_overwritten (test_campaign_candidate.CampaignCandidateTests.test_existing_candidate_manifest_is_never_overwritten) ... ok
+test_live_candidate_requires_frozen_manifest_before_provider_session (test_campaign_candidate.CampaignCandidateTests.test_live_candidate_requires_frozen_manifest_before_provider_session) ... ok
+test_new_campaign_uses_candidate_and_old_campaign_keeps_original_prompt (test_campaign_candidate.CampaignCandidateTests.test_new_campaign_uses_candidate_and_old_campaign_keeps_original_prompt) ... ok
+test_preflight_requires_authorization_capacity_and_unspent_freeze (test_campaign_candidate.CampaignCandidateTests.test_preflight_requires_authorization_capacity_and_unspent_freeze) ... ok
+test_unknown_campaign_is_rejected (test_campaign_candidate.CampaignCandidateTests.test_unknown_campaign_is_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.048s
+
+OK

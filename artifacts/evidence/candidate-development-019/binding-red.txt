@@ -1,0 +1,4 @@
+Working directory: projects/p02
+Command: .venv/Scripts/python.exe -m unittest discover -s tests -p test_campaign_candidate.py -v
+Exit code: 1
+Output: Ran 6 tests; FAILED (failures=1, errors=1). Candidate root authorization was not selected for the fingerprint and existing manifests were not rejected before freeze.

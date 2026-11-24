@@ -187,7 +187,10 @@ def execute_development(args: argparse.Namespace) -> int:
     try:
         ex.use_campaign(args.campaign)
         if args.campaign == "p02-dev-v2" and not args.execute_fixture:
-            raise ex.ExecutionBlocked("candidate_campaign_not_enabled")
+            ex.verify_candidate_authority(lab, freezing=args.freeze)
+            owner = read_json(ROOT / "evals/live-execution.json")
+            if args.campaign not in owner.get("approved_campaigns", []):
+                raise ex.ExecutionBlocked("candidate_owner_allocation_missing")
         if args.stage != "development":
             raise ex.ExecutionBlocked("development_stage_only")
         config = read_json(ROOT / "evals/live-campaign.json")

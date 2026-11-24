@@ -1,11 +1,17 @@
 import json
+import io
+import os
 import subprocess
 import sys
+import tempfile
 import unittest
+from contextlib import redirect_stdout
 from pathlib import Path
+from unittest.mock import patch
 
 from scripts import campaign_execution as ex
 from scripts.campaign_corpus import build_case
+from scripts import run_live_campaign as cli
 
 ROOT = Path(__file__).resolve().parents[1]
 CASE = next(row for line in (ROOT / "evals/datasets/live-v1/cases.jsonl").read_text(encoding="utf-8").splitlines() if (row := json.loads(line))["split"] == "development")
@@ -39,8 +45,61 @@ class CampaignCandidateTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             ex.use_campaign("p02-holdout-v1")
 
-    def test_candidate_freeze_and_live_execution_are_closed(self):
+    def test_live_candidate_requires_frozen_manifest_before_provider_session(self):
+        output = io.StringIO()
+        with patch.object(ex, "verify_candidate_authority", return_value={}), patch.object(ex, "validate_manifest", side_effect=ex.ExecutionBlocked("manifest_missing")), patch.object(ex, "live_session") as session, patch.dict(os.environ, {"LLM_MODE": "live"}), redirect_stdout(output):
+            code = cli.main(["--stage", "development", "--campaign", "p02-dev-v2", "--execute-free", "--max-trials", "1"])
+        self.assertEqual(code, 2)
+        self.assertEqual(json.loads(output.getvalue())["reason"], "manifest_missing")
+        session.assert_not_called()
+
+    def test_candidate_fingerprint_binds_its_own_root_authorization(self):
+        ex.use_campaign("p02-dev-v2")
+        self.assertIn(".planning/llm-live-readiness/phases/064-p02-candidate-development/AUTHORIZATION.json", ex.root_files())
+
+    def test_existing_candidate_manifest_is_never_overwritten(self):
+        ex.use_campaign("p02-dev-v2")
+        with tempfile.TemporaryDirectory() as temporary:
+            out = Path(temporary)
+            manifest = out / "manifest.json"
+            manifest.write_text("existing", encoding="utf-8")
+            with patch.object(ex, "fingerprint", return_value="a" * 64), patch.object(ex, "git", return_value="b" * 40):
+                with self.assertRaisesRegex(ex.ExecutionBlocked, "manifest_already_exists"):
+                    ex.freeze(ROOT, ROOT.parents[1], out, ROOT / "evals/datasets/live-v1/cases.jsonl", [CASE])
+            self.assertEqual(manifest.read_text(encoding="utf-8"), "existing")
+
+    def test_preflight_requires_authorization_capacity_and_unspent_freeze(self):
+        class Account:
+            def __init__(self, authorized, rows):
+                self.authorized, self.rows = authorized, rows
+
+            def _p02_campaigns(self):
+                return {"p02-dev-v2": 24} if self.authorized else {}
+
+            def _history(self):
+                return self.rows
+
+        prior = [{"project": "p02", "campaign": "p02-dev-v1", "event": "completed", "status": "ok"}] * 24
+        with self.assertRaisesRegex(ex.ExecutionBlocked, "candidate_authorization_missing"):
+            ex.candidate_preflight(Account(False, prior), freezing=True)
+        self.assertEqual(ex.candidate_preflight(Account(True, prior), freezing=True)["development_used"], 24)
+        with self.assertRaisesRegex(ex.ExecutionBlocked, "development_capacity_insufficient"):
+            ex.candidate_preflight(Account(True, prior * 3), freezing=True)
+        uncertain = prior + [{"project": "p05", "campaign": "other", "event": "reserved", "status": None}]
+        with self.assertRaisesRegex(ex.ExecutionBlocked, "uncertain_attempt_requires_reconciliation"):
+            ex.candidate_preflight(Account(True, uncertain), freezing=True)
+        spent = prior + [{"project": "p02", "campaign": "p02-dev-v2", "event": "completed", "status": "ok"}]
+        with self.assertRaisesRegex(ex.ExecutionBlocked, "candidate_already_started"):
+            ex.candidate_preflight(Account(True, spent), freezing=True)
+        stopped = prior + [{"project": "p02", "campaign": "p02-dev-v2", "event": "completed", "status": "provider_error"}]
+        with self.assertRaisesRegex(ex.ExecutionBlocked, "candidate_stopped_requires_review"):
+            ex.candidate_preflight(Account(True, stopped), freezing=False)
+
+    def test_cli_checks_account_before_freeze_or_live(self):
         for option in ("--freeze", "--execute-free"):
-            result = subprocess.run([sys.executable, "scripts/run_live_campaign.py", "--stage", "development", "--campaign", "p02-dev-v2", option, "--max-trials", "1"], cwd=ROOT, capture_output=True, text=True)
-            self.assertEqual(result.returncode, 2)
-            self.assertEqual(json.loads(result.stdout)["reason"], "candidate_campaign_not_enabled")
+            output = io.StringIO()
+            with self.subTest(option=option), patch.object(ex, "verify_candidate_authority", side_effect=ex.ExecutionBlocked("candidate_authorization_missing")) as gate, redirect_stdout(output):
+                code = cli.main(["--stage", "development", "--campaign", "p02-dev-v2", option, "--max-trials", "1"])
+            self.assertEqual(code, 2)
+            self.assertEqual(json.loads(output.getvalue())["reason"], "candidate_authorization_missing")
+            gate.assert_called_once()
