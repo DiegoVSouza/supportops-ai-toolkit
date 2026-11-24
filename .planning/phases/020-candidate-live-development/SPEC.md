@@ -1,0 +1,5 @@
+# Phase 020: bounded candidate development run
+
+Evaluate `p02-dev-v2` on the existing development split only, at most 24 provider attempts, one per case, through the root free-account transport. Owner continuation and free-key authority are recorded in committed root phase 064. Paid allowance is USD 0 and total-loss cap USD 5. Holdout and confirmation remain protected. Existing `p02-dev-v1` and all historical usage remain immutable and cumulative against the original 72-call development ceiling.
+
+The committed candidate prompt, corpus, grader, dataset, owner manifest, root guard, policy and campaign-specific authorization must all be fingerprinted. Before freezing or dispatch, verify committed authority, root history, no uncertain attempt and remaining capacity under the account lock. Freeze once; never overwrite its manifest. Validate it before the root provider session is created. Stop on the first non-OK or uncertain attempt; never replay it or reset a limit through a new ID. Fixture results are not model quality.
