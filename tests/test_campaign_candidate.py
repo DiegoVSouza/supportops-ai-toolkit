@@ -23,6 +23,11 @@ class CampaignCandidateTests(unittest.TestCase):
 
     def test_candidate_prompt_is_part_of_frozen_source_set(self):
         self.assertIn("agent/prompts/tool-selection-candidate-v1.md", ex.source_paths(ROOT))
+        self.assertIn("agent/prompts/tool-selection-candidate-v2.md", ex.source_paths(ROOT))
+
+    def test_v3_candidate_requires_versioned_prompt_source(self):
+        self.assertIn("agent/prompts/tool-selection-candidate-v2.md", ex.source_paths(ROOT))
+        ex.use_campaign("p02-dev-v3")
 
     def test_new_campaign_uses_candidate_and_old_campaign_keeps_original_prompt(self):
         class Session:
@@ -40,6 +45,22 @@ class CampaignCandidateTests(unittest.TestCase):
         ex.use_campaign("p02-dev-v1")
         ex.call_provider(CASE, build_case(CASE), session)
         self.assertNotIn("does not execute", session.envelope["payload"]["messages"][0]["content"])
+
+    def test_v3_uses_its_prompt_and_binds_its_own_root_authorization(self):
+        class Session:
+            def preview(self, envelope):
+                self.envelope = envelope
+
+            def complete(self, envelope):
+                return {"status": "ok", "usage": {"input_tokens": 1, "output_tokens": 1}, "content": "{}"}
+
+        session = Session()
+        ex.use_campaign("p02-dev-v3")
+        ex.call_provider(CASE, build_case(CASE), session)
+        content = session.envelope["payload"]["messages"][0]["content"]
+        self.assertIn("These fields must agree", content)
+        self.assertEqual(content, (ROOT / "agent/prompts/tool-selection-candidate-v2.md").read_text(encoding="utf-8").strip())
+        self.assertIn(".planning/llm-live-readiness/phases/065-p02-candidate-v3/AUTHORIZATION.json", ex.root_files())
 
     def test_unknown_campaign_is_rejected(self):
         with self.assertRaises(ValueError):
@@ -69,12 +90,13 @@ class CampaignCandidateTests(unittest.TestCase):
             self.assertEqual(manifest.read_text(encoding="utf-8"), "existing")
 
     def test_preflight_requires_authorization_capacity_and_unspent_freeze(self):
+        ex.use_campaign("p02-dev-v2")
         class Account:
             def __init__(self, authorized, rows):
                 self.authorized, self.rows = authorized, rows
 
             def _p02_campaigns(self):
-                return {"p02-dev-v2": 24} if self.authorized else {}
+                return {ex.CAMPAIGN: 24} if self.authorized else {}
 
             def _history(self):
                 return self.rows

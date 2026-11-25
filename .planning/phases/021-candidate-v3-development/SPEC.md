@@ -1,0 +1,3 @@
+# Phase 021: bounded P02 candidate v3 development run
+
+Evaluate the revised, versioned tool-routing prompt on the same 24 development cases under campaign ID `p02-dev-v3`. The root phase 065 authorization permits at most 24 free-only calls, one per case, within the 72-call cumulative P02 development ceiling. Every prior attempt remains counted. The runner must verify committed root authority and a frozen source fingerprint before provider initialization, stop on the first non-OK or uncertain attempt, and never replay or overwrite a manifest. Holdout, confirmation, real tool effects and paid spend are forbidden. Fixture results are not model quality.

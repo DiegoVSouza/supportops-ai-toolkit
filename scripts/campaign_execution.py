@@ -50,7 +50,7 @@ SAFE_REASON = re.compile(r"[a-z_]{1,64}")
 
 def use_campaign(campaign: str) -> None:
     """Select an explicitly known development campaign; never enable it at the account boundary."""
-    if campaign not in {"p02-dev-v1", "p02-dev-v2"}:
+    if campaign not in {"p02-dev-v1", "p02-dev-v2", "p02-dev-v3"}:
         raise ValueError("unknown development campaign")
     global CAMPAIGN
     CAMPAIGN = campaign
@@ -128,18 +128,20 @@ ROOT_FILES = (
 def root_files() -> tuple[str, ...]:
     if CAMPAIGN == "p02-dev-v2":
         return ROOT_FILES[:-1] + (".planning/llm-live-readiness/phases/064-p02-candidate-development/AUTHORIZATION.json",)
+    if CAMPAIGN == "p02-dev-v3":
+        return ROOT_FILES[:-1] + (".planning/llm-live-readiness/phases/065-p02-candidate-v3/AUTHORIZATION.json",)
     return ROOT_FILES
 
 
 def candidate_preflight(account: Any, *, freezing: bool) -> dict[str, int]:
     """Check committed authority and cumulative history without contacting the provider."""
-    if account._p02_campaigns().get("p02-dev-v2") != 24:
+    if account._p02_campaigns().get(CAMPAIGN) != 24:
         raise ExecutionBlocked("candidate_authorization_missing")
     rows = account._history()
     if any(row["event"] == "reserved" for row in rows):
         raise ExecutionBlocked("uncertain_attempt_requires_reconciliation")
     dev = [row for row in rows if row["project"] == "p02" and row["campaign"].startswith("p02-dev-")]
-    current = [row for row in dev if row["campaign"] == "p02-dev-v2"]
+    current = [row for row in dev if row["campaign"] == CAMPAIGN]
     if freezing and current:
         raise ExecutionBlocked("candidate_already_started")
     if any(row["event"] == "completed" and row["status"] != "ok" for row in current):
@@ -183,9 +185,9 @@ def ordered_cases(cases: list[dict[str, Any]]) -> list[dict[str, Any]]:
 
 
 def freeze(project: Path, lab: Path, out_dir: Path, cases_path: Path, cases: list[dict[str, Any]]) -> dict[str, Any]:
-    if CAMPAIGN == "p02-dev-v2" and (out_dir / "manifest.json").exists():
+    if CAMPAIGN in {"p02-dev-v2", "p02-dev-v3"} and (out_dir / "manifest.json").exists():
         raise ExecutionBlocked("manifest_already_exists")
-    if CAMPAIGN == "p02-dev-v2" and any((out_dir / name).exists() for name in ("ledger.sqlite", "trials.jsonl", "stop.json")):
+    if CAMPAIGN in {"p02-dev-v2", "p02-dev-v3"} and any((out_dir / name).exists() for name in ("ledger.sqlite", "trials.jsonl", "stop.json")):
         raise ExecutionBlocked("candidate_already_started")
     manifest = {
         "campaign": CAMPAIGN,
@@ -199,7 +201,7 @@ def freeze(project: Path, lab: Path, out_dir: Path, cases_path: Path, cases: lis
         "split": "development",
     }
     out_dir.mkdir(parents=True, exist_ok=True)
-    if CAMPAIGN == "p02-dev-v2":
+    if CAMPAIGN in {"p02-dev-v2", "p02-dev-v3"}:
         try:
             with (out_dir / "manifest.json").open("x", encoding="utf-8", newline="\n") as stream:
                 stream.write(json.dumps(manifest, indent=2) + "\n")
@@ -348,6 +350,10 @@ def call_provider(case: dict[str, Any], built: BuiltCase, session: Any) -> dict[
         from scripts.candidate_corpus import build_candidate_payload
 
         payload = build_candidate_payload(case, MODEL)
+    elif CAMPAIGN == "p02-dev-v3":
+        from scripts.candidate_corpus import build_v3_candidate_payload
+
+        payload = build_v3_candidate_payload(case, MODEL)
     else:
         payload = build_payload(built, MODEL)
     envelope = {
