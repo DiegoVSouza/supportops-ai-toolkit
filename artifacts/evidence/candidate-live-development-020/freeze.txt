@@ -1,0 +1,5 @@
+Working directory: projects/p02
+Command: .venv/Scripts/python.exe scripts/run_live_campaign.py --stage development --campaign p02-dev-v2 --freeze
+Exit code: 0
+Output: {"status":"FROZEN","candidate":"01d6afd29709f1f07d4a064876ca4641f8719d3d","fingerprint":"83728fa0543db735e3a52ba46b2945edc7b13e534eb52b3cfe5578f924aabdbb"}
+Provider accessed: false. Root authorization and cumulative history were checked before freeze.
