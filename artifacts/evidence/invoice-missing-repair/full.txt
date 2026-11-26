@@ -1,0 +1,1 @@
+command=uv run --with pytest python -m pytest tests -q; exit_code=0; output=123 passed, 11 subtests passed in 3.93s

@@ -40,8 +40,19 @@ class CorpusTests(unittest.TestCase):
             number = str(request_number(case["text"]))
             if case["family"] == "invoice_missing":
                 self.assertNotIn(number, built.evidence["ledger_invoice_ids"])
+                self.assertEqual(
+                    built.evidence["invoice_lookup"],
+                    {"requested_id": number, "found": False},
+                )
             if case["family"] == "contradictory_evidence":
                 self.assertEqual(built.evidence["ledger"], {number: "unpaid"})
+
+    def test_prompt_requires_escalation_for_explicit_missing_invoice_result(self) -> None:
+        self.assertIn(
+            "For invoice lookup, when invoice_lookup.found is false, return decision=escalate, "
+            "tool=lookup_invoice, escalate=true, abstain=true.",
+            SYSTEM_PROMPT,
+        )
 
     def test_prompt_carries_no_expected_outcome_or_rubric_text(self) -> None:
         for case in DEV:

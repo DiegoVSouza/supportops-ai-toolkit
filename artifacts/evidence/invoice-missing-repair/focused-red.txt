@@ -1,0 +1,1 @@
+command=uv run --with pytest python -m pytest tests/test_campaign_corpus.py -q; exit_code=1; output=2 failed, 5 passed; regressions confirmed missing invoice_lookup evidence and missing explicit missing-invoice prompt rule
