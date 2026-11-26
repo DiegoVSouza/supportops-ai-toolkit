@@ -73,6 +73,18 @@ class ExecutionTests(unittest.TestCase):
         self.assertEqual(len(order), 24)
         self.assertEqual(len({i.rsplit("-", 1)[0] for i in ex.PILOT_IDS}), 6)
 
+    def test_v4_smoke_is_sealed_to_four_development_trials(self) -> None:
+        prior = ex.CAMPAIGN
+        ex.use_campaign("p02-dev-v4-smoke")
+        self.addCleanup(setattr, ex, "CAMPAIGN", prior)
+        self.assertEqual(ex.campaign_caps()["requests"], 4)
+        session = oracle()
+        self.assertEqual(self.run_campaign(session, 4), {"ran": 4, "remaining": 20})
+        self.assertEqual(sum(session.calls.values()), 4)
+        self.assertTrue(all(row["campaign"] == "p02-dev-v4-smoke" for row in self.trials()))
+        with self.assertRaisesRegex(ex.ExecutionBlocked, "smoke_trial_limit_exceeded"):
+            self.run_campaign(session, 5)
+
     def test_full_fixture_run_passes_every_case_and_stays_content_free(self) -> None:
         session = oracle()
         progress = self.run_campaign(session, 100)

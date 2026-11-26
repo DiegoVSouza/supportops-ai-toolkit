@@ -50,7 +50,7 @@ SAFE_REASON = re.compile(r"[a-z_]{1,64}")
 
 def use_campaign(campaign: str) -> None:
     """Select an explicitly known development campaign; never enable it at the account boundary."""
-    if campaign not in {"p02-dev-v1", "p02-dev-v2", "p02-dev-v3"}:
+    if campaign not in {"p02-dev-v1", "p02-dev-v2", "p02-dev-v3", "p02-dev-v4-smoke"}:
         raise ValueError("unknown development campaign")
     global CAMPAIGN
     CAMPAIGN = campaign
@@ -64,11 +64,12 @@ TRIAL_CAPS = {"requests": 1, "input_tokens": 4096, "output_tokens": 512, "estima
 
 
 def campaign_caps() -> dict[str, Any]:
+    attempt_limit = 4 if CAMPAIGN == "p02-dev-v4-smoke" else TRIAL_CALLS
     return {
-        "requests": TRIAL_CALLS,
-        "input_tokens": TRIAL_CALLS * TRIAL_CAPS["input_tokens"],
-        "output_tokens": TRIAL_CALLS * TRIAL_CAPS["output_tokens"],
-        "estimated_cost_usd": TRIAL_CALLS * TRIAL_CAPS["estimated_cost_usd"],
+        "requests": attempt_limit,
+        "input_tokens": attempt_limit * TRIAL_CAPS["input_tokens"],
+        "output_tokens": attempt_limit * TRIAL_CAPS["output_tokens"],
+        "estimated_cost_usd": attempt_limit * TRIAL_CAPS["estimated_cost_usd"],
     }
 
 
@@ -130,12 +131,15 @@ def root_files() -> tuple[str, ...]:
         return ROOT_FILES[:-1] + (".planning/llm-live-readiness/phases/064-p02-candidate-development/AUTHORIZATION.json",)
     if CAMPAIGN == "p02-dev-v3":
         return ROOT_FILES[:-1] + (".planning/llm-live-readiness/phases/065-p02-candidate-v3/AUTHORIZATION.json",)
+    if CAMPAIGN == "p02-dev-v4-smoke":
+        return ROOT_FILES[:-1] + (".planning/llm-live-readiness/phases/066-p02-development-smoke/AUTHORIZATION.json",)
     return ROOT_FILES
 
 
 def candidate_preflight(account: Any, *, freezing: bool) -> dict[str, int]:
     """Check committed authority and cumulative history without contacting the provider."""
-    if account._p02_campaigns().get(CAMPAIGN) != 24:
+    campaign_limit = account._p02_campaigns().get(CAMPAIGN)
+    if campaign_limit != (4 if CAMPAIGN == "p02-dev-v4-smoke" else 24):
         raise ExecutionBlocked("candidate_authorization_missing")
     rows = account._history()
     if any(row["event"] == "reserved" for row in rows):
@@ -146,7 +150,8 @@ def candidate_preflight(account: Any, *, freezing: bool) -> dict[str, int]:
         raise ExecutionBlocked("candidate_already_started")
     if any(row["event"] == "completed" and row["status"] != "ok" for row in current):
         raise ExecutionBlocked("candidate_stopped_requires_review")
-    if len(dev) + (24 if freezing else 0) > 72:
+    cumulative_limit = 76 if CAMPAIGN == "p02-dev-v4-smoke" else 72
+    if len(dev) + (campaign_limit if freezing else 0) > cumulative_limit:
         raise ExecutionBlocked("development_capacity_insufficient")
     return {"development_used": len(dev), "candidate_used": len(current)}
 
@@ -185,9 +190,10 @@ def ordered_cases(cases: list[dict[str, Any]]) -> list[dict[str, Any]]:
 
 
 def freeze(project: Path, lab: Path, out_dir: Path, cases_path: Path, cases: list[dict[str, Any]]) -> dict[str, Any]:
-    if CAMPAIGN in {"p02-dev-v2", "p02-dev-v3"} and (out_dir / "manifest.json").exists():
+    sealed = CAMPAIGN in {"p02-dev-v2", "p02-dev-v3", "p02-dev-v4-smoke"}
+    if sealed and (out_dir / "manifest.json").exists():
         raise ExecutionBlocked("manifest_already_exists")
-    if CAMPAIGN in {"p02-dev-v2", "p02-dev-v3"} and any((out_dir / name).exists() for name in ("ledger.sqlite", "trials.jsonl", "stop.json")):
+    if sealed and any((out_dir / name).exists() for name in ("ledger.sqlite", "trials.jsonl", "stop.json")):
         raise ExecutionBlocked("candidate_already_started")
     manifest = {
         "campaign": CAMPAIGN,
@@ -201,7 +207,7 @@ def freeze(project: Path, lab: Path, out_dir: Path, cases_path: Path, cases: lis
         "split": "development",
     }
     out_dir.mkdir(parents=True, exist_ok=True)
-    if CAMPAIGN in {"p02-dev-v2", "p02-dev-v3"}:
+    if sealed:
         try:
             with (out_dir / "manifest.json").open("x", encoding="utf-8", newline="\n") as stream:
                 stream.write(json.dumps(manifest, indent=2) + "\n")
@@ -350,7 +356,7 @@ def call_provider(case: dict[str, Any], built: BuiltCase, session: Any) -> dict[
         from scripts.candidate_corpus import build_candidate_payload
 
         payload = build_candidate_payload(case, MODEL)
-    elif CAMPAIGN == "p02-dev-v3":
+    elif CAMPAIGN in {"p02-dev-v3", "p02-dev-v4-smoke"}:
         from scripts.candidate_corpus import build_v3_candidate_payload
 
         payload = build_v3_candidate_payload(case, MODEL)
@@ -406,6 +412,8 @@ def execute_campaign(
     """Run up to `max_trials` unfinished trials in order; stop on the first infrastructure problem."""
     if max_trials < 1:
         raise ExecutionBlocked("max_trials_required")
+    if CAMPAIGN == "p02-dev-v4-smoke" and max_trials > 4:
+        raise ExecutionBlocked("smoke_trial_limit_exceeded")
     out_dir.mkdir(parents=True, exist_ok=True)
     if (out_dir / "stop.json").exists():
         raise ExecutionBlocked("campaign_stopped_requires_review")
