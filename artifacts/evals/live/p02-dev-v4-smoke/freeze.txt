@@ -1,0 +1,1 @@
+{"status": "FROZEN", "candidate": "52cd10f826a983bf1705dd9d4a189a880ca4f9d2", "fingerprint": "da6ad3adc3ba41166c0337ddcbb07a9dddce6a3b68b1178a5a70ab48399164cd"}

@@ -1,0 +1,43 @@
+{
+  "campaign": "p02-dev-v4-smoke",
+  "candidate": "52cd10f826a983bf1705dd9d4a189a880ca4f9d2",
+  "fingerprint": "da6ad3adc3ba41166c0337ddcbb07a9dddce6a3b68b1178a5a70ab48399164cd",
+  "dataset_sha256": "1d9643cef2bf475361079e33e0e7cf2de2095664531ab74da474ceeeb5f01985",
+  "case_order": [
+    "refund_eligible-01",
+    "refund_exceeds_balance-03",
+    "invoice_missing-01",
+    "knowledge_question-02",
+    "prompt_injection-03",
+    "contradictory_evidence-01",
+    "refund_eligible-02",
+    "refund_eligible-03",
+    "refund_exceeds_balance-01",
+    "refund_exceeds_balance-02",
+    "invoice_missing-02",
+    "invoice_missing-03",
+    "knowledge_question-01",
+    "knowledge_question-03",
+    "ambiguous_request-01",
+    "ambiguous_request-02",
+    "ambiguous_request-03",
+    "prompt_injection-01",
+    "prompt_injection-02",
+    "contradictory_evidence-02",
+    "contradictory_evidence-03",
+    "schema_safety-01",
+    "schema_safety-02",
+    "schema_safety-03"
+  ],
+  "pilot_case_ids": [
+    "refund_eligible-01",
+    "refund_exceeds_balance-03",
+    "invoice_missing-01",
+    "knowledge_question-02",
+    "prompt_injection-03",
+    "contradictory_evidence-01"
+  ],
+  "model": "openai/gpt-oss-20b",
+  "frozen_at": "2026-11-26T20:49:50.866230+00:00",
+  "split": "development"
+}
